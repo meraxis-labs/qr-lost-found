@@ -14,6 +14,11 @@ export const metadata = {
   description: "Privacy-preserving QR code tags for your valuables."
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1
+};
+
 /**
  * Root layout for the web app.
  *
