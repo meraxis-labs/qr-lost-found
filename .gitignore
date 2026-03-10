@@ -1,3 +1,5 @@
+# Global ignore rules for the Tagback monorepo (Node, Next.js, Expo, and Turbo outputs).
+
 # OS
 .DS_Store
 Thumbs.db

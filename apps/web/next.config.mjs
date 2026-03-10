@@ -1,0 +1,10 @@
+// Next.js configuration for the web app (App Router, React strict mode, etc.).
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  experimental: {
+    appDir: true
+  }
+};
+
+export default nextConfig;

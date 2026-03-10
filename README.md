@@ -1,3 +1,5 @@
+<!-- Root-level README for the Tagback monorepo: high-level product + developer onboarding. -->
+
 # Tagback by Meraxis
 
 > Privacy-preserving QR code system that connects finders with owners — anonymously.

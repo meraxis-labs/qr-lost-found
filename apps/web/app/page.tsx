@@ -1,0 +1,91 @@
+/**
+ * Marketing / landing page for the Tagback web app.
+ *
+ * For now this is a static page that explains the product. As we build
+ * out the MVP, this is also a good place to link to the owner dashboard
+ * and any authentication flows (login / sign-up) powered by Supabase.
+ */
+export default function HomePage() {
+  return (
+    <main className="min-h-screen flex flex-col items-center justify-center px-6">
+      {/* Hero section: product positioning + primary CTAs */}
+      <section className="max-w-3xl w-full space-y-6 text-center">
+        <p className="text-sm font-semibold tracking-[0.25em] text-slate-400 uppercase">
+          Meraxis Tagback
+        </p>
+        <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">
+          QR lost &amp; found,
+          <span className="text-sky-400"> without giving up privacy.</span>
+        </h1>
+        <p className="text-slate-300 text-base md:text-lg">
+          Print QR stickers, attach them to your valuables, and let finders
+          contact you anonymously via Supabase-powered messaging.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center mt-4">
+          <a
+            href="#get-started"
+            className="inline-flex items-center justify-center rounded-full bg-sky-500 px-6 py-2.5 text-sm font-medium text-slate-950 shadow-lg shadow-sky-500/30 hover:bg-sky-400 transition"
+          >
+            Get started
+          </a>
+          <a
+            href="#how-it-works"
+            className="inline-flex items-center justify-center rounded-full border border-slate-700 px-6 py-2.5 text-sm font-medium text-slate-100 hover:border-slate-500 transition"
+          >
+            How it works
+          </a>
+        </div>
+      </section>
+
+      {/* Three-column explainer for the main value props / flow */}
+      <section
+        id="how-it-works"
+        className="mt-16 grid gap-6 md:grid-cols-3 max-w-4xl w-full"
+      >
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 text-left">
+          <h2 className="text-sm font-semibold text-slate-300 mb-1">
+            1. Create tags
+          </h2>
+          <p className="text-sm text-slate-400">
+            Generate QR codes for each item. Tags are linked to an anonymous
+            Supabase profile, not raw contact info.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 text-left">
+          <h2 className="text-sm font-semibold text-slate-300 mb-1">
+            2. Attach &amp; forget
+          </h2>
+          <p className="text-sm text-slate-400">
+            Print and stick them on your valuables. If something gets lost, the
+            QR routes finders to a safe contact form.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 text-left">
+          <h2 className="text-sm font-semibold text-slate-300 mb-1">
+            3. Get anonymous pings
+          </h2>
+          <p className="text-sm text-slate-400">
+            Messages land in your owner dashboard, backed by Supabase Auth,
+            without exposing phone numbers or email.
+          </p>
+        </div>
+      </section>
+
+      {/* Developer note for wiring this page up to Supabase. */}
+      <section
+        id="get-started"
+        className="mt-16 max-w-xl w-full text-center text-sm text-slate-400"
+      >
+        <p>
+          Next step: wire this UI to your Supabase project for auth, tag
+          storage, and anonymous messaging. Environment variables are read from
+          <span className="font-mono text-slate-300">
+            {" "}
+            .env.local
+          </span>{" "}
+          in <span className="font-mono text-slate-300">apps/web/</span>.
+        </p>
+      </section>
+    </main>
+  );
+}

@@ -1,0 +1,58 @@
+// TypeScript configuration for the Next.js web app (strict settings tuned for App Router).
+{
+  "compilerOptions": {
+    // Set ECMAScript target version
+    "target": "ES2020",
+    // Include DOM, DOM iterable, and latest ES features in the type system
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    // Disallow JavaScript files (TypeScript only)
+    "allowJs": false,
+    // Don't check library files (*.d.ts) for type errors (speeds up build)
+    "skipLibCheck": true,
+    // Enable all strict type-checking options
+    "strict": true,
+    // Ensure path/file name casing matches between import and file system
+    "forceConsistentCasingInFileNames": true,
+    // Don't emit output files—typechecking only (Next.js expects this)
+    "noEmit": true,
+    // Enable compatibility for importing CommonJS modules
+    "esModuleInterop": true,
+    // Use ECMAScript module system (import/export)
+    "module": "esnext",
+    // Use the bundler (like Next.js/webpack) for module resolution
+    "moduleResolution": "bundler",
+    // Allow importing of .json files as modules
+    "resolveJsonModule": true,
+    // Ensure each file can be safely transpiled in isolation (required by Next.js)
+    "isolatedModules": true,
+    // Defer to the framework for JSX transform
+    "jsx": "react-jsx",
+    // Enable faster incremental compilations
+    "incremental": true,
+    // Include Node.js type declarations (for process, etc.)
+    "types": [
+      "node"
+    ],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  // Files to include in type-checking (Next.js types, all TS and TSX files)
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
+  // Exclude node_modules folder from the project
+  "exclude": [
+    "node_modules"
+  ]
+}

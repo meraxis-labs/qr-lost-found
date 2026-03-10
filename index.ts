@@ -1,4 +1,14 @@
-// QR Tag
+/**
+ * Core domain types shared across the monorepo.
+ *
+ * These interfaces model the main entities in the system and should be
+ * imported from here by both the web app and (later) the mobile app or
+ * any shared backend logic. Keeping them in one place helps avoid
+ * divergence between clients when the data model evolves.
+ */
+
+// QR Tag associated with a physical item owned by a user.
+// One owner can have many tags (wallet, laptop bag, keys, etc.).
 export interface Tag {
   id: string;
   ownerId: string;
@@ -7,7 +17,8 @@ export interface Tag {
   isActive: boolean;
 }
 
-// Anonymous message from finder to owner
+// Anonymous message sent by a finder when they scan a QR code.
+// The finder is not an authenticated user; we only track them via a token.
 export interface Message {
   id: string;
   tagId: string;
@@ -17,7 +28,8 @@ export interface Message {
   read: boolean;
 }
 
-// Owner profile (minimal, privacy-first)
+// Minimal owner profile; we intentionally store only what we need.
+// Authentication and password management are delegated to Supabase Auth.
 export interface Owner {
   id: string;
   email: string;
