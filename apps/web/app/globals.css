@@ -1,43 +1,15 @@
-/* Global styles for the Next.js App Router web shell.
- *
- * Keep this file focused on app-wide resets, typography, and theming.
- * Prefer co-located styles (e.g. Tailwind classes or CSS Modules) for
- * component-specific styling to avoid global CSS bloat.
- */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Inter font for a clean, modern UI. */
-@import url("https://rsms.me/inter/inter.css");
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
 
-:root {
-  /* Tell the browser and OS that this app prefers a dark theme. */
-  color-scheme: dark;
-}
-
-*,
-*::before,
-*::after {
-  /* Use border-box sizing everywhere to make layout math sane. */
-  box-sizing: border-box;
-}
-
-html,
-body {
-  padding: 0;
-  margin: 0;
-}
-
-body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
-  /* Simple radial gradient that gives a subtle spotlight effect from the top. */
-  background: radial-gradient(circle at top, #020617 0, #020617 40%, #020617 100%);
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button {
-  /* Inherit text styles so buttons feel consistent with surrounding text. */
-  font: inherit;
+  body {
+    @apply bg-slate-950 text-slate-50 antialiased;
+    background: radial-gradient(circle at top, #020617 0, #020617 40%, #020617 100%);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  }
 }

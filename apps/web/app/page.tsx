@@ -1,3 +1,5 @@
+import { AuthStatus } from "../components/AuthStatus";
+
 /**
  * Marketing / landing page for the Tagback web app.
  *
@@ -8,6 +10,8 @@
 export default function HomePage() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6">
+      {/* Global auth status + Logout button lives in the top-right corner. */}
+      <AuthStatus />
       {/* Hero section: product positioning + primary CTAs */}
       <section className="max-w-3xl w-full space-y-6 text-center">
         <p className="text-sm font-semibold tracking-[0.25em] text-slate-400 uppercase">
@@ -22,17 +26,26 @@ export default function HomePage() {
           contact you anonymously via Supabase-powered messaging.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center mt-4">
-          <a
-            href="#get-started"
-            className="inline-flex items-center justify-center rounded-full bg-sky-500 px-6 py-2.5 text-sm font-medium text-slate-950 shadow-lg shadow-sky-500/30 hover:bg-sky-400 transition"
-          >
+          <a href="#get-started" className="btn btn-primary">
             Get started
           </a>
           <a
             href="#how-it-works"
-            className="inline-flex items-center justify-center rounded-full border border-slate-700 px-6 py-2.5 text-sm font-medium text-slate-100 hover:border-slate-500 transition"
+            className="btn btn-outline"
           >
             How it works
+          </a>
+          <a
+            href="/auth/login"
+            className="btn btn-outline"
+          >
+            Login
+          </a>
+          <a
+            href="/auth/signup"
+            className="btn btn-outline"
+          >
+            Sign up
           </a>
         </div>
       </section>
