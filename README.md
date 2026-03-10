@@ -1,16 +1,18 @@
-## Tagback by Meraxis
+# Tagback by Meraxis
 
-Privacy-preserving QR code system that connects finders with owners — anonymously.
+> Privacy-preserving QR code system that connects finders with owners — anonymously.
 
+---
 
-### What it does
+## What it does
 
 Tagback lets you print QR stickers and attach them to your valuables. If someone finds your lost item, they scan the QR code and can send you an anonymous message — no personal info exposed on either side.
 
+---
 
-### Monorepo structure
+## Monorepo Structure
 
-```text
+```
 meraxis-tagback/
 ├── apps/
 │   ├── web/          # Next.js — QR landing pages, owner dashboard, messaging UI
@@ -21,27 +23,29 @@ meraxis-tagback/
 └── package.json
 ```
 
+---
 
-### Tech stack
+## Tech Stack
 
-- **Web**: Next.js (App Router)
-- **Mobile**: Expo / React Native
-- **Backend**: Next.js API Routes → Fastify (post-MVP)
-- **Database**: Supabase (Postgres + Auth + Realtime)
-- **Monorepo**: Turborepo
-- **QR generation**: `qrcode` npm package
+| Layer | Technology |
+|---|---|
+| Web | Next.js (App Router) |
+| Mobile | Expo / React Native |
+| Backend | Next.js API Routes → Fastify (post-MVP) |
+| Database | Supabase (Postgres + Auth + Realtime) |
+| Monorepo | Turborepo |
+| QR Generation | `qrcode` npm package |
 
+---
 
-### Getting started
+## Getting Started
 
-#### Prerequisites
+### Prerequisites
+- Node.js 18+
+- npm or yarn
+- Supabase account
 
-- **Node.js**: 18+
-- **Package manager**: npm or yarn
-- **Accounts**: Supabase account
-
-
-#### Install
+### Install
 
 ```bash
 git clone https://github.com/meraxis/meraxis-tagback.git
@@ -49,15 +53,13 @@ cd meraxis-tagback
 npm install
 ```
 
-
-#### Run all apps in dev mode
+### Run all apps in dev mode
 
 ```bash
 npm run dev
 ```
 
-
-#### Run individual apps
+### Run individual apps
 
 ```bash
 # Web only
@@ -67,8 +69,9 @@ cd apps/web && npm run dev
 cd apps/mobile && npx expo start
 ```
 
+---
 
-### Environment variables
+## Environment Variables
 
 Create `.env.local` in `apps/web/`:
 
@@ -78,17 +81,19 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
 ```
 
+---
 
-### Roadmap
+## Roadmap
 
-- **QR code generation + sticker export**
-- **Anonymous finder → owner messaging**
-- **Owner dashboard** (manage tags, read messages)
-- **Push notifications** (mobile)
-- **Premium plan** (multiple tags, custom messages)
-- **Physical sticker store**
+- [ ] QR code generation + sticker export
+- [ ] Anonymous finder → owner messaging
+- [ ] Owner dashboard (manage tags, read messages)
+- [ ] Push notifications (mobile)
+- [ ] Premium plan (multiple tags, custom messages)
+- [ ] Physical sticker store
 
+---
 
-### License
+## License
 
-MIT © Meraxis
+MIT © [Meraxis](https://meraxis.com)

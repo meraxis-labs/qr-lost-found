@@ -1,0 +1,36 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Next.js
+.next/
+out/
+
+# Expo / React Native
+.expo/
+dist/
+
+# Build outputs
+build/
+dist/
+
+# Turbo
+.turbo/
+
+# Logs
+*.log
