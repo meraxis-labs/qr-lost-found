@@ -1,11 +1,9 @@
 import { AuthStatus } from "../components/AuthStatus";
+import { GetStartedLink } from "../components/GetStartedLink";
 
 /**
  * Marketing / landing page for the Tagback web app.
- *
- * For now this is a static page that explains the product. As we build
- * out the MVP, this is also a good place to link to the owner dashboard
- * and any authentication flows (login / sign-up) powered by Supabase.
+ * Get started → signup or dashboard (if logged in). Login / Sign up go to auth.
  */
 export default function HomePage() {
   return (
@@ -26,9 +24,7 @@ export default function HomePage() {
           contact you anonymously via Supabase-powered messaging.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center mt-4">
-          <a href="#get-started" className="btn btn-primary">
-            Get started
-          </a>
+          <GetStartedLink />
           <a
             href="#how-it-works"
             className="btn btn-outline"
@@ -84,19 +80,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Developer note for wiring this page up to Supabase. */}
+      {/* CTA: sign up to create tags and get finder links (P0/P1 done). */}
       <section
         id="get-started"
         className="mt-16 max-w-xl w-full text-center text-sm text-slate-400"
       >
         <p>
-          Next step: wire this UI to your Supabase project for auth, tag
-          storage, and anonymous messaging. Environment variables are read from
-          <span className="font-mono text-slate-300">
-            {" "}
-            .env.local
-          </span>{" "}
-          in <span className="font-mono text-slate-300">apps/web/</span>.
+          Create an account to add your first tag and get a unique finder link.
+          Put it on a QR sticker so anyone who finds your item can message you
+          anonymously.
         </p>
       </section>
     </main>
