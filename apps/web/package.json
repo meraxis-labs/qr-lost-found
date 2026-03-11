@@ -10,11 +10,13 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.49.0",
     "next": "latest",
+    "qrcode": "^1.5.4",
     "react": "^18.3.0",
     "react-dom": "^18.3.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "@types/qrcode": "^1.5.5",
     "@types/react": "^18.0.0",
     "autoprefixer": "^10.4.27",
     "eslint": "^8.0.0",

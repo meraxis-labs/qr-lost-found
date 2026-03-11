@@ -4,17 +4,20 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { AuthStatus } from "@/components/AuthStatus";
-import type { Tag, TagRow } from "@/lib/types";
-import { tagRowToTag } from "@/lib/types";
+import { TagQR } from "@/components/TagQR";
+import type { Tag, TagRow, Message, MessageRow } from "@/lib/types";
+import { tagRowToTag, messageRowToMessage } from "@/lib/types";
 
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<{ id: string } | null>(null);
   const [tags, setTags] = useState<Tag[]>([]);
+  const [messagesByTagId, setMessagesByTagId] = useState<Record<string, Message[]>>({});
   const [loading, setLoading] = useState(true);
   const [createLabel, setCreateLabel] = useState("");
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+  const [expandedQRTagId, setExpandedQRTagId] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -61,6 +64,38 @@ export default function DashboardPage() {
       isMounted = false;
     };
   }, [user]);
+
+  // Fetch messages for all tags; mark as read when first loaded (P2 #8).
+  useEffect(() => {
+    if (tags.length === 0) return;
+    const tagIds = tags.map((t) => t.id);
+    let isMounted = true;
+
+    void Promise.resolve(
+      supabase.from("messages").select("*").in("tag_id", tagIds).order("created_at", { ascending: false })
+    )
+      .then(async ({ data, error }) => {
+        if (!isMounted || error) return;
+        const rows = (data ?? []) as MessageRow[];
+        const byTag: Record<string, Message[]> = {};
+        const unreadIds: string[] = [];
+        for (const row of rows) {
+          const msg = messageRowToMessage(row);
+          byTag[row.tag_id] = byTag[row.tag_id] ?? [];
+          byTag[row.tag_id].push(msg);
+          if (!row.read) unreadIds.push(row.id);
+        }
+        setMessagesByTagId(byTag);
+        if (unreadIds.length > 0) {
+          await supabase.from("messages").update({ read: true } as never).in("id", unreadIds);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      isMounted = false;
+    };
+  }, [tags]);
 
   const handleCreateTag = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,29 +185,69 @@ export default function DashboardPage() {
           </div>
         ) : (
           <ul className="space-y-2">
-            {tags.map((tag) => (
-              <li
-                key={tag.id}
-                className="rounded-xl border border-slate-800 bg-slate-900/40 p-4 flex items-center justify-between"
-              >
-                <div>
-                  <span className="font-medium text-slate-200">
-                    {tag.label || "Unnamed tag"}
-                  </span>
-                  <span className="ml-2 text-xs text-slate-500 font-mono">
-                    {tag.id.slice(0, 8)}…
-                  </span>
-                </div>
-                <a
-                  href={`/f/${tag.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-sky-400 hover:text-sky-300"
+            {tags.map((tag) => {
+              const messages = messagesByTagId[tag.id] ?? [];
+              const showQR = expandedQRTagId === tag.id;
+              return (
+                <li
+                  key={tag.id}
+                  className="rounded-xl border border-slate-800 bg-slate-900/40 p-4"
                 >
-                  Finder link →
-                </a>
-              </li>
-            ))}
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                      <span className="font-medium text-slate-200">
+                        {tag.label || "Unnamed tag"}
+                      </span>
+                      <span className="ml-2 text-xs text-slate-500 font-mono">
+                        {tag.id.slice(0, 8)}…
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={`/f/${tag.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-sky-400 hover:text-sky-300"
+                      >
+                        Finder link →
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => setExpandedQRTagId(showQR ? null : tag.id)}
+                        className="text-xs text-slate-300 hover:text-slate-50 border border-slate-600 rounded-md px-2 py-1"
+                      >
+                        {showQR ? "Hide QR" : "Show QR"}
+                      </button>
+                    </div>
+                  </div>
+                  {showQR && (
+                    <div className="mt-3 pt-3 border-t border-slate-800">
+                      <TagQR tagId={tag.id} label={tag.label} />
+                    </div>
+                  )}
+                  {messages.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-slate-800">
+                      <p className="text-xs font-medium text-slate-400 mb-2">
+                        Messages ({messages.length})
+                      </p>
+                      <ul className="space-y-2">
+                        {messages.map((msg) => (
+                          <li
+                            key={msg.id}
+                            className="text-sm text-slate-300 bg-slate-900/60 rounded-lg p-2 border border-slate-800"
+                          >
+                            <p className="whitespace-pre-wrap">{msg.content}</p>
+                            <p className="text-xs text-slate-500 mt-1">
+                              {new Date(msg.createdAt).toLocaleString()}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>
