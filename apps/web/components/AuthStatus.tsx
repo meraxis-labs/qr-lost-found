@@ -26,7 +26,10 @@ export function AuthStatus() {
       .then(({ data, error }) => {
         if (!isMounted) return;
         if (error) {
-          setError(error.message);
+          // "Auth session missing" / "session missing" is expected when not signed in — don't show as error.
+          const msg = error.message?.toLowerCase() ?? "";
+          const isNoSession = msg.includes("session") && (msg.includes("missing") || msg.includes("not found"));
+          if (!isNoSession) setError(error.message);
           setUser(null);
         } else {
           setUser(data.user ?? null);
