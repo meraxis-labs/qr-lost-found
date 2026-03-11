@@ -38,11 +38,13 @@ export default function DashboardPage() {
 
     let isMounted = true;
 
-    supabase
-      .from("tags")
-      .select("*")
-      .eq("owner_id", user.id)
-      .order("created_at", { ascending: false })
+    void Promise.resolve(
+      supabase
+        .from("tags")
+        .select("*")
+        .eq("owner_id", user.id)
+        .order("created_at", { ascending: false })
+    )
       .then(({ data, error }) => {
         if (!isMounted) return;
         if (error) {
@@ -71,7 +73,8 @@ export default function DashboardPage() {
       .insert({
         owner_id: user.id,
         label: createLabel.trim() || null,
-      })
+        is_active: true,
+      } as never)
       .select()
       .single();
 

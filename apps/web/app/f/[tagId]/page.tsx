@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import type { TagRow } from "@/lib/types";
 import { FinderForm } from "./FinderForm";
 
 type Props = { params: Promise<{ tagId: string }> };
@@ -7,12 +8,14 @@ type Props = { params: Promise<{ tagId: string }> };
 export default async function FinderPage({ params }: Props) {
   const { tagId } = await params;
 
-  const { data: row, error } = await supabase
+  const { data, error } = await supabase
     .from("tags")
     .select("id, label, is_active")
     .eq("id", tagId)
     .eq("is_active", true)
     .single();
+
+  const row = data as Pick<TagRow, "id" | "label" | "is_active"> | null;
 
   if (error || !row) {
     notFound();
