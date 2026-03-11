@@ -39,9 +39,9 @@ export default function SignupPage() {
       return;
     }
 
-    // If a session is returned immediately, route to the homepage.
+    // If a session is returned immediately, route to the dashboard.
     if (data.session) {
-      router.push("/");
+      router.push("/dashboard");
       return;
     }
 

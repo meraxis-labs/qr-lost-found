@@ -9,6 +9,7 @@
  * side only (never in client-side code).
  */
 import { createClient } from "@supabase/supabase-js";
+import type { Database } from "./types";
 
 // These environment variables are provided by the Supabase dashboard.
 // They must be defined in apps/web/.env.local (see README).
@@ -29,5 +30,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 // Shared Supabase client instance used across the app.
+// Typed with Database so .from("tags") and .from("messages") are inferred.
 // Import { supabase } from "@/lib/supabaseClient" wherever you need it.
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);

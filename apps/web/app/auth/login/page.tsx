@@ -29,8 +29,8 @@ export default function LoginPage() {
       return;
     }
 
-    // On successful login, redirect to the homepage for now.
-    router.push("/");
+    // On successful login, redirect to the dashboard.
+    router.push("/dashboard");
   };
 
   return (

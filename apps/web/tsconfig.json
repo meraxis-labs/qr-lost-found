@@ -1,6 +1,11 @@
 // TypeScript configuration for the Next.js web app (strict settings tuned for App Router).
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@repo/types": ["../../index.ts"]
+    },
     // Set ECMAScript target version
     "target": "ES2020",
     // Include DOM, DOM iterable, and latest ES features in the type system
