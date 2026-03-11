@@ -1,13 +1,11 @@
-import { AuthStatus } from "../components/AuthStatus";
 import { GetStartedLink } from "../components/GetStartedLink";
 
 /**
- * Minimal landing page: one headline, one line, one CTA. Auth in corner.
+ * Minimal landing page: one headline, one line, one CTA. Auth in header.
  */
 export default function HomePage() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-12">
-      <AuthStatus />
       <section className="max-w-lg w-full text-center space-y-8">
         <div className="space-y-3">
           <h1 className="text-2xl sm:text-4xl font-medium tracking-tight text-slate-100">

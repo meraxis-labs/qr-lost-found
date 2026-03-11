@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
-import { AuthStatus } from "@/components/AuthStatus";
 import { TagQR } from "@/components/TagQR";
 import type { Tag, TagRow, Message, MessageRow } from "@/lib/types";
 import { tagRowToTag, messageRowToMessage } from "@/lib/types";
@@ -131,8 +130,7 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen flex flex-col px-4 py-6 sm:py-8 pb-[env(safe-area-inset-bottom)]">
-      <AuthStatus />
-      <div className="max-w-2xl w-full mx-auto pt-10 sm:pt-0">
+      <div className="max-w-2xl w-full mx-auto">
         <div className="flex items-center justify-between gap-3 mb-6">
           <h1 className="text-xl sm:text-2xl font-semibold text-slate-50">My tags</h1>
           <a
