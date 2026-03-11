@@ -38,33 +38,33 @@ export function FinderForm({ tagId }: Props) {
 
   if (sent) {
     return (
-      <div className="rounded-md bg-emerald-950/40 border border-emerald-900 p-3 text-sm text-emerald-200">
+      <div className="rounded-lg bg-emerald-950/40 border border-emerald-900 p-4 text-base text-emerald-200 leading-relaxed">
         Message sent. The owner will be able to see it in their dashboard.
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
-      <label htmlFor="finder-message" className="block text-xs font-medium text-slate-200">
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <label htmlFor="finder-message" className="block text-sm font-medium text-slate-200">
         Your message
       </label>
       <textarea
         id="finder-message"
         required
-        rows={3}
+        rows={4}
         placeholder="e.g. I found your wallet at the café on Main St. How can I get it back to you?"
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        className="w-full rounded-md bg-slate-900 border border-slate-700 px-3 py-2 text-sm text-slate-50 placeholder:text-slate-500 outline-none focus:border-sky-500 resize-none"
+        className="w-full rounded-lg bg-slate-900 border border-slate-700 px-4 py-3 text-base text-slate-50 placeholder:text-slate-500 outline-none focus:border-sky-500 resize-none min-h-[120px]"
       />
       {error && (
-        <p className="text-xs text-red-400">{error}</p>
+        <p className="text-sm text-red-400">{error}</p>
       )}
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-md bg-sky-500 text-slate-950 text-sm font-medium py-2 hover:bg-sky-400 disabled:opacity-60 disabled:cursor-not-allowed transition"
+        className="w-full rounded-lg bg-sky-500 text-slate-950 text-base font-medium py-3 min-h-[48px] hover:bg-sky-400 disabled:opacity-60 disabled:cursor-not-allowed transition touch-manipulation"
       >
         {loading ? "Sending…" : "Send message"}
       </button>

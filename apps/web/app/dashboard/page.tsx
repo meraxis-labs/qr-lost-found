@@ -130,14 +130,14 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col px-4 py-6">
+    <main className="min-h-screen flex flex-col px-4 py-6 sm:py-8 pb-[env(safe-area-inset-bottom)]">
       <AuthStatus />
-      <div className="max-w-2xl w-full mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl font-semibold text-slate-50">My tags</h1>
+      <div className="max-w-2xl w-full mx-auto pt-10 sm:pt-0">
+        <div className="flex items-center justify-between gap-3 mb-6">
+          <h1 className="text-xl sm:text-2xl font-semibold text-slate-50">My tags</h1>
           <a
             href="/"
-            className="text-xs text-slate-300 hover:text-slate-50 border border-slate-700 rounded-full px-3 py-1"
+            className="text-sm text-slate-300 hover:text-slate-50 border border-slate-700 rounded-full px-4 py-2.5 min-h-[44px] inline-flex items-center touch-manipulation"
           >
             ← Home
           </a>
@@ -146,98 +146,98 @@ export default function DashboardPage() {
         {/* Create tag form */}
         <form
           onSubmit={handleCreateTag}
-          className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 mb-6"
+          className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-5 mb-6"
         >
-          <label htmlFor="tag-label" className="block text-sm font-medium text-slate-200 mb-2">
+          <label htmlFor="tag-label" className="block text-base sm:text-sm font-medium text-slate-200 mb-2">
             Create a new tag
           </label>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-3">
             <input
               id="tag-label"
               type="text"
               placeholder="e.g. My Wallet, Laptop Bag"
               value={createLabel}
               onChange={(e) => setCreateLabel(e.target.value)}
-              className="flex-1 rounded-md bg-slate-900 border border-slate-700 px-3 py-2 text-sm text-slate-50 placeholder:text-slate-500 outline-none focus:border-sky-500"
+              className="flex-1 rounded-lg bg-slate-900 border border-slate-700 px-4 py-3 text-base text-slate-50 placeholder:text-slate-500 outline-none focus:border-sky-500 min-h-[48px]"
             />
             <button
               type="submit"
               disabled={creating}
-              className="rounded-md bg-sky-500 text-slate-950 text-sm font-medium px-4 py-2 hover:bg-sky-400 disabled:opacity-60 disabled:cursor-not-allowed transition"
+              className="rounded-lg bg-sky-500 text-slate-950 text-base font-medium px-5 py-3 min-h-[48px] hover:bg-sky-400 disabled:opacity-60 disabled:cursor-not-allowed transition touch-manipulation"
             >
               {creating ? "Adding…" : "Add tag"}
             </button>
           </div>
           {createError && (
-            <p className="mt-2 text-xs text-red-400">{createError}</p>
+            <p className="mt-2 text-sm text-red-400">{createError}</p>
           )}
         </form>
 
         {/* List or empty state */}
         {loading ? (
-          <p className="text-sm text-slate-400">Loading your tags…</p>
+          <p className="text-base text-slate-400">Loading your tags…</p>
         ) : tags.length === 0 ? (
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-8 text-center">
-            <p className="text-slate-300 mb-1">No tags yet</p>
-            <p className="text-sm text-slate-400">
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 sm:p-8 text-center">
+            <p className="text-slate-300 mb-2 text-base">No tags yet</p>
+            <p className="text-base sm:text-sm text-slate-400 leading-relaxed">
               Create your first tag above. Each tag gets a unique link you can put on a QR sticker so finders can contact you anonymously.
             </p>
           </div>
         ) : (
-          <ul className="space-y-2">
+          <ul className="space-y-3">
             {tags.map((tag) => {
               const messages = messagesByTagId[tag.id] ?? [];
               const showQR = expandedQRTagId === tag.id;
               return (
                 <li
                   key={tag.id}
-                  className="rounded-xl border border-slate-800 bg-slate-900/40 p-4"
+                  className="rounded-xl border border-slate-800 bg-slate-900/40 p-4 sm:p-5"
                 >
-                  <div className="flex items-center justify-between flex-wrap gap-2">
-                    <div>
-                      <span className="font-medium text-slate-200">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="min-w-0">
+                      <span className="font-medium text-slate-200 text-base block truncate">
                         {tag.label || "Unnamed tag"}
                       </span>
-                      <span className="ml-2 text-xs text-slate-500 font-mono">
+                      <span className="text-sm text-slate-500 font-mono">
                         {tag.id.slice(0, 8)}…
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-shrink-0">
                       <a
                         href={`/f/${tag.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs text-sky-400 hover:text-sky-300"
+                        className="text-sm text-sky-400 hover:text-sky-300 py-2 px-3 min-h-[44px] inline-flex items-center touch-manipulation"
                       >
                         Finder link →
                       </a>
                       <button
                         type="button"
                         onClick={() => setExpandedQRTagId(showQR ? null : tag.id)}
-                        className="text-xs text-slate-300 hover:text-slate-50 border border-slate-600 rounded-md px-2 py-1"
+                        className="text-sm text-slate-300 hover:text-slate-50 border border-slate-600 rounded-lg px-3 py-2.5 min-h-[44px] touch-manipulation"
                       >
                         {showQR ? "Hide QR" : "Show QR"}
                       </button>
                     </div>
                   </div>
                   {showQR && (
-                    <div className="mt-3 pt-3 border-t border-slate-800">
+                    <div className="mt-4 pt-4 border-t border-slate-800">
                       <TagQR tagId={tag.id} label={tag.label} />
                     </div>
                   )}
                   {messages.length > 0 && (
-                    <div className="mt-3 pt-3 border-t border-slate-800">
-                      <p className="text-xs font-medium text-slate-400 mb-2">
+                    <div className="mt-4 pt-4 border-t border-slate-800">
+                      <p className="text-sm font-medium text-slate-400 mb-2">
                         Messages ({messages.length})
                       </p>
                       <ul className="space-y-2">
                         {messages.map((msg) => (
                           <li
                             key={msg.id}
-                            className="text-sm text-slate-300 bg-slate-900/60 rounded-lg p-2 border border-slate-800"
+                            className="text-base sm:text-sm text-slate-300 bg-slate-900/60 rounded-lg p-3 border border-slate-800"
                           >
                             <p className="whitespace-pre-wrap">{msg.content}</p>
-                            <p className="text-xs text-slate-500 mt-1">
+                            <p className="text-sm text-slate-500 mt-2">
                               {new Date(msg.createdAt).toLocaleString()}
                             </p>
                           </li>

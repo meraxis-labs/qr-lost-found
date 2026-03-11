@@ -62,44 +62,45 @@ export function AuthStatus() {
 
   if (loading) {
     return (
-      <div className="fixed top-4 right-4 rounded-full bg-slate-900/80 border border-slate-700 px-4 py-1 text-xs text-slate-300">
+      <div className="fixed top-4 right-4 rounded-full bg-slate-900/80 border border-slate-700 px-4 py-2.5 text-sm text-slate-300 min-h-[44px] flex items-center">
         Checking session…
       </div>
     );
   }
 
   return (
-    <div className="fixed top-4 right-4 rounded-full bg-slate-900/80 border border-slate-700 px-4 py-1 flex items-center gap-2 text-xs text-slate-200">
+    <div className="fixed top-4 right-4 rounded-2xl bg-slate-900/80 border border-slate-700 px-4 py-2 flex items-center gap-2 text-sm text-slate-200 min-h-[44px] flex-wrap justify-end max-w-[calc(100vw-2rem)]">
       {user ? (
         <>
-          <span className="truncate max-w-[12rem]">
+          <span className="truncate max-w-[12rem] sm:max-w-[16rem]">
             Signed in as <span className="font-medium">{user.email}</span>
           </span>
           <button
+            type="button"
             onClick={handleLogout}
-            className="ml-1 rounded-full border border-slate-600 px-2 py-0.5 text-[11px] hover:border-slate-400 hover:text-slate-50 transition"
+            className="rounded-full border border-slate-600 px-3 py-2 min-h-[44px] text-sm hover:border-slate-400 hover:text-slate-50 transition touch-manipulation"
           >
             Logout
           </button>
         </>
       ) : (
-        <span className="flex items-center gap-2 text-slate-400">
+        <span className="flex items-center gap-2 text-slate-400 flex-wrap">
           <span>Not signed in</span>
           <a
             href="/auth/login"
-            className="rounded-full border border-slate-600 px-2 py-0.5 text-[11px] hover:border-slate-400 hover:text-slate-50 transition"
+            className="rounded-full border border-slate-600 px-3 py-2 min-h-[44px] inline-flex items-center text-sm hover:border-slate-400 hover:text-slate-50 transition touch-manipulation"
           >
             Login
           </a>
           <a
             href="/auth/signup"
-            className="rounded-full border border-slate-600 px-2 py-0.5 text-[11px] hover:border-slate-400 hover:text-slate-50 transition"
+            className="rounded-full border border-slate-600 px-3 py-2 min-h-[44px] inline-flex items-center text-sm hover:border-slate-400 hover:text-slate-50 transition touch-manipulation"
           >
             Signup
           </a>
         </span>
       )}
-      {error && <span className="ml-2 text-red-400">({error})</span>}
+      {error && <span className="ml-2 text-red-400 text-sm">({error})</span>}
     </div>
   );
 }

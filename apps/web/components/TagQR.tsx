@@ -34,32 +34,32 @@ export function TagQR({ tagId, label }: Props) {
   }, [dataUrl, tagId, label]);
 
   if (error) {
-    return <p className="text-xs text-red-400">{error}</p>;
+    return <p className="text-sm text-red-400">{error}</p>;
   }
 
   if (!dataUrl) {
-    return <p className="text-xs text-slate-400">Generating QR…</p>;
+    return <p className="text-sm text-slate-400">Generating QR…</p>;
   }
 
   return (
-    <div className="flex flex-col items-center gap-2 pt-2">
+    <div className="flex flex-col items-center gap-3 pt-2">
       <img
         src={dataUrl}
         alt={`QR code for ${label ?? "tag"} finder link`}
-        className="rounded-lg border border-slate-700 bg-white p-2"
+        className="rounded-lg border border-slate-700 bg-white p-2 max-w-full"
       />
       <a
         href={finderUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-xs text-sky-400 hover:text-sky-300 break-all"
+        className="text-sm text-sky-400 hover:text-sky-300 break-all text-center"
       >
         {finderUrl}
       </a>
       <button
         type="button"
         onClick={handleDownload}
-        className="text-xs text-slate-300 hover:text-slate-50 border border-slate-600 rounded-md px-2 py-1"
+        className="text-sm text-slate-300 hover:text-slate-50 border border-slate-600 rounded-lg px-4 py-2.5 min-h-[44px] touch-manipulation"
       >
         Download PNG
       </button>

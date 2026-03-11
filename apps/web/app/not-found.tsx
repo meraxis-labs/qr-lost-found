@@ -2,15 +2,15 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-4">
-      <div className="text-center">
-        <h1 className="text-xl font-semibold text-slate-50 mb-1">Tag not found</h1>
-        <p className="text-sm text-slate-400 mb-4">
+    <main className="min-h-screen flex flex-col items-center justify-center px-4 py-6">
+      <div className="text-center max-w-md">
+        <h1 className="text-xl sm:text-2xl font-semibold text-slate-50 mb-2">Tag not found</h1>
+        <p className="text-base text-slate-400 mb-6 leading-relaxed">
           This link may be invalid or the tag may have been deactivated.
         </p>
         <Link
           href="/"
-          className="text-sm text-sky-400 hover:text-sky-300 underline-offset-2 hover:underline"
+          className="inline-flex items-center justify-center min-h-[44px] px-5 py-3 text-base text-sky-400 hover:text-sky-300 underline-offset-2 hover:underline touch-manipulation"
         >
           Go to Tagback home
         </Link>

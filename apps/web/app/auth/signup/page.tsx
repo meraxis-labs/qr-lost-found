@@ -49,66 +49,69 @@ export default function SignupPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4">
+    <main className="min-h-screen flex items-center justify-center px-4 py-6 sm:py-8">
       <div className="absolute top-4 left-4">
         <a
           href="/"
-          className="text-xs text-slate-300 hover:text-slate-50 border border-slate-700 rounded-full px-3 py-1"
+          className="text-sm text-slate-300 hover:text-slate-50 border border-slate-700 rounded-full px-4 py-2.5 min-h-[44px] inline-flex items-center touch-manipulation"
         >
           ← Back home
         </a>
       </div>
-      <div className="w-full max-w-sm rounded-2xl border border-slate-800 bg-slate-950/60 p-6 shadow-xl">
-        <h1 className="text-lg font-semibold text-slate-50 mb-1">
+      <div className="w-full max-w-sm rounded-2xl border border-slate-800 bg-slate-950/60 p-5 sm:p-6 shadow-xl">
+        <h1 className="text-xl sm:text-2xl font-semibold text-slate-50 mb-2">
           Sign up for Tagback
         </h1>
-        <p className="text-xs text-slate-400 mb-4">
+        <p className="text-sm text-slate-400 mb-5">
           Create an account using Supabase Auth email/password.
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <div className="space-y-1">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
             <label
               htmlFor="email"
-              className="block text-xs font-medium text-slate-200"
+              className="block text-sm font-medium text-slate-200"
             >
               Email
             </label>
             <input
               id="email"
               type="email"
+              inputMode="email"
+              autoComplete="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-md bg-slate-900 border border-slate-700 px-2 py-1.5 text-sm text-slate-50 outline-none focus:border-sky-500"
+              className="w-full rounded-lg bg-slate-900 border border-slate-700 px-4 py-3 text-base text-slate-50 placeholder:text-slate-500 outline-none focus:border-sky-500 min-h-[48px]"
             />
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-2">
             <label
               htmlFor="password"
-              className="block text-xs font-medium text-slate-200"
+              className="block text-sm font-medium text-slate-200"
             >
               Password
             </label>
             <input
               id="password"
               type="password"
+              autoComplete="new-password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-md bg-slate-900 border border-slate-700 px-2 py-1.5 text-sm text-slate-50 outline-none focus:border-sky-500"
+              className="w-full rounded-lg bg-slate-900 border border-slate-700 px-4 py-3 text-base text-slate-50 outline-none focus:border-sky-500 min-h-[48px]"
             />
           </div>
 
           {error && (
-            <p className="text-xs text-red-400 bg-red-950/40 border border-red-900 rounded-md px-2 py-1">
+            <p className="text-sm text-red-400 bg-red-950/40 border border-red-900 rounded-lg px-3 py-2">
               {error}
             </p>
           )}
 
           {message && !error && (
-            <p className="text-xs text-emerald-300 bg-emerald-950/40 border border-emerald-900 rounded-md px-2 py-1">
+            <p className="text-sm text-emerald-300 bg-emerald-950/40 border border-emerald-900 rounded-lg px-3 py-2">
               {message}
             </p>
           )}
@@ -116,13 +119,13 @@ export default function SignupPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-md bg-sky-500 text-slate-950 text-sm font-medium py-1.5 mt-2 hover:bg-sky-400 disabled:opacity-60 disabled:cursor-not-allowed transition"
+            className="w-full rounded-lg bg-sky-500 text-slate-950 text-base font-medium py-3 min-h-[48px] mt-2 hover:bg-sky-400 disabled:opacity-60 disabled:cursor-not-allowed transition touch-manipulation"
           >
             {loading ? "Signing up…" : "Sign up"}
           </button>
         </form>
 
-        <p className="mt-4 text-[11px] text-slate-400">
+        <p className="mt-5 text-sm text-slate-400">
           Already have an account?{" "}
           <a
             href="/auth/login"
