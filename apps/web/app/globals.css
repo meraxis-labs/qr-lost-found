@@ -12,12 +12,17 @@
     font-size: 100%;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    /* Match viewport so body can fill it without extra scroll on mobile */
+    min-height: 100dvh;
   }
 
   body {
     @apply bg-slate-950 text-slate-50 antialiased;
     background: radial-gradient(circle at top, #020617 0, #020617 40%, #020617 100%);
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    /* Exactly one viewport when content fits; no rubber-band scroll on mobile */
+    min-height: 100dvh;
+    overflow-x: hidden;
     /* Safe area for notched devices (e.g. iPhone) */
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
