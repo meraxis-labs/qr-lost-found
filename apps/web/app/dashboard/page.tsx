@@ -1,3 +1,16 @@
+/**
+ * DASHBOARD PAGE
+ * --------------
+ * Route: /dashboard
+ * Only for logged-in users. Shows:
+ * 1. A form to create a new tag (label like "My Wallet").
+ * 2. A list of the user's tags; each tag can show its finder link, a QR code,
+ *    and any messages from finders.
+ * If the user isn't logged in, we redirect them to the login page.
+ * We load tags and messages from Supabase and mark messages as read when
+ * they're first displayed.
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -16,8 +29,9 @@ export default function DashboardPage() {
   const [createLabel, setCreateLabel] = useState("");
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
-  const [expandedQRTagId, setExpandedQRTagId] = useState<string | null>(null);
+  const [expandedQRTagId, setExpandedQRTagId] = useState<string | null>(null); // Which tag's QR is visible
 
+  // --- Auth check: redirect to login if not signed in ---
   useEffect(() => {
     let isMounted = true;
 
@@ -35,6 +49,7 @@ export default function DashboardPage() {
     };
   }, [router]);
 
+  // --- Load this user's tags from the database ---
   useEffect(() => {
     if (!user) return;
 
@@ -64,7 +79,7 @@ export default function DashboardPage() {
     };
   }, [user]);
 
-  // Fetch messages for all tags; mark as read when first loaded (P2 #8).
+  // --- Load messages for all tags and mark them as read ---
   useEffect(() => {
     if (tags.length === 0) return;
     const tagIds = tags.map((t) => t.id);
@@ -125,7 +140,7 @@ export default function DashboardPage() {
   };
 
   if (!user) {
-    return null; // redirecting to login
+    return null; // We're redirecting to login; avoid flashing dashboard content
   }
 
   return (
@@ -141,7 +156,7 @@ export default function DashboardPage() {
           </a>
         </div>
 
-        {/* Create tag form */}
+        {/* Form to add a new tag */}
         <form
           onSubmit={handleCreateTag}
           className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-5 mb-6"
@@ -171,7 +186,7 @@ export default function DashboardPage() {
           )}
         </form>
 
-        {/* List or empty state */}
+        {/* List of tags, or empty state, or loading */}
         {loading ? (
           <p className="text-base text-slate-400">Loading your tags…</p>
         ) : tags.length === 0 ? (

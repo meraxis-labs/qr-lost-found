@@ -1,3 +1,14 @@
+/**
+ * FINDER FORM
+ * ------------
+ * Used on the finder page (/f/[tagId]). Lets the finder type a message and
+ * submit it. We insert a row into the "messages" table with the tag_id and
+ * content; the owner sees it in their dashboard. We don't collect the
+ * finder's email or name — it's anonymous.
+ *
+ * After a successful send we show a success message and hide the form.
+ */
+
 "use client";
 
 import { FormEvent, useState } from "react";

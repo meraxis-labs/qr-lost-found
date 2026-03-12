@@ -1,3 +1,17 @@
+/**
+ * TAG QR — QR code for a tag's finder link
+ * -----------------------------------------
+ * Used on the dashboard when the user clicks "Show QR" on a tag. We
+ * generate a QR code that encodes the finder URL (e.g. https://app.example.com/f/abc123).
+ * The finder can scan it with their phone to open the finder page and send
+ * a message. We also show the URL as text and a "Download PNG" button so
+ * the user can print or share the QR.
+ *
+ * We use the "qrcode" library to turn the URL into a data URL (base64 image)
+ * in the browser. We need typeof window !== "undefined" because this can
+ * run during SSR where window doesn't exist.
+ */
+
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
@@ -5,14 +19,11 @@ import QRCode from "qrcode";
 
 type Props = { tagId: string; label?: string | null };
 
-/**
- * Shows a QR code for the finder URL (BASE_URL/f/tagId) and optional PNG download.
- * Used on the dashboard (P2 — QR code generation).
- */
 export function TagQR({ tagId, label }: Props) {
   const [dataUrl, setDataUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Build the full URL only on the client (window.origin)
   const finderUrl =
     typeof window !== "undefined"
       ? `${window.location.origin}/f/${tagId}`

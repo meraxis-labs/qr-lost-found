@@ -1,3 +1,17 @@
+/**
+ * FINDER PAGE (public, no login required)
+ * ---------------------------------------
+ * Route: /f/[tagId] — e.g. /f/abc123-def456
+ * When someone scans a Tagback QR code or opens a finder link, they land
+ * here. We look up the tag by ID; if it exists and is active, we show
+ * the FinderForm so they can send an anonymous message to the owner.
+ * If the tag doesn't exist or is inactive, we show the 404 (not-found) page.
+ *
+ * This is a Server Component: we fetch the tag on the server so the
+ * page can render without a loading spinner. The form itself is a Client
+ * Component (FinderForm) because it needs useState and form submission.
+ */
+
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import type { TagRow } from "@/lib/types";
@@ -18,7 +32,7 @@ export default async function FinderPage({ params }: Props) {
   const row = data as Pick<TagRow, "id" | "label" | "is_active"> | null;
 
   if (error || !row) {
-    notFound();
+    notFound(); // Renders the not-found.tsx page
   }
 
   return (
@@ -29,7 +43,7 @@ export default async function FinderPage({ params }: Props) {
         </h1>
         <p className="text-base sm:text-sm text-slate-400 mb-4 leading-relaxed">
           This item has a Tagback tag. Send a short message to the owner
-          anonymously — they’ll get it without seeing your contact info.
+          anonymously — they'll get it without seeing your contact info.
         </p>
         {row.label && (
           <p className="text-sm text-slate-500 mb-4">

@@ -1,3 +1,12 @@
+/**
+ * NOT FOUND (404) PAGE
+ * --------------------
+ * Shown when the user visits a URL that doesn't match any route (e.g. a
+ * bad or deactivated tag link like /f/invalid-id). We use the same
+ * layout as the rest of the app (header + content area) and offer a link
+ * back to the home page.
+ */
+
 import Link from "next/link";
 
 export default function NotFound() {

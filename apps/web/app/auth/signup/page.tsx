@@ -1,3 +1,13 @@
+/**
+ * SIGNUP PAGE
+ * -----------
+ * Route: /auth/signup
+ * New users enter email and password here. Supabase may require email
+ * confirmation (depends on project settings). We show either an error,
+ * a success message ("Check your email"), or redirect to the dashboard
+ * if a session is created immediately.
+ */
+
 "use client";
 
 import { FormEvent, useState } from "react";
@@ -11,7 +21,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null); // Success message (e.g. "Check your email")
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -31,6 +41,7 @@ export default function SignupPage() {
       return;
     }
 
+    // Supabase can be set to require email confirmation. If so, user exists but no session yet.
     if (data.user && !data.session) {
       setMessage(
         "Signup successful. Please check your email to confirm your account before logging in."
@@ -38,6 +49,7 @@ export default function SignupPage() {
       return;
     }
 
+    // If we get a session right away, send them to the dashboard
     if (data.session) {
       router.push("/dashboard");
       return;

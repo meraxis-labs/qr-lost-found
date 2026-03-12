@@ -1,3 +1,17 @@
+/**
+ * AUTH STATUS — Top bar for login and navigation
+ * ----------------------------------------------
+ * Rendered in the root layout so it appears on every page. It shows:
+ * - Left: "Tagback" link to home
+ * - Right: If loading, "…". If logged in, the user's email + "Log out".
+ *          If not logged in, "Log in" and "Sign up" links.
+ *
+ * We use Supabase Auth: getUser() on mount to know the current user, and
+ * onAuthStateChange() to update when the user signs in or out in another tab
+ * or after a redirect. The header is in normal document flow (not fixed) so
+ * page content never overlaps it on mobile.
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -6,10 +20,6 @@ import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabaseClient";
 
-/**
- * Top bar: home link on the left, auth on the right.
- * In document flow (not fixed) so page content never overlaps it.
- */
 export function AuthStatus() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
@@ -19,6 +29,7 @@ export function AuthStatus() {
   useEffect(() => {
     let isMounted = true;
 
+    // Check if there's already a session (e.g. user just landed on the site)
     supabase.auth
       .getUser()
       .then(({ data, error: err }) => {
@@ -38,6 +49,7 @@ export function AuthStatus() {
         if (isMounted) setLoading(false);
       });
 
+    // Listen for sign-in / sign-out so we update the UI without reloading
     const {
       data: { subscription }
     } = supabase.auth.onAuthStateChange((_event, session) => {

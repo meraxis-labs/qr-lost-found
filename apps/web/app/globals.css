@@ -1,29 +1,48 @@
+/**
+ * GLOBAL STYLES
+ * -------------
+ * Applied to the whole app. Tailwind's @tailwind directives pull in its
+ * base styles, component classes, and utilities. We then override and
+ * extend for our app (dark theme, safe areas, reusable button styles).
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ========== BASE LAYER ========== */
+/* Styles that affect fundamental elements (html, body). */
+
 @layer base {
+  /* Use dark color scheme so native UI (scrollbars, etc.) matches our dark theme. */
   :root {
     color-scheme: dark;
   }
 
-  /* Prevent iOS zoom on input focus; ensure readable base size on mobile */
+  /*
+   * HTML: prevent mobile browsers from zooming when an input is focused,
+   * and make the root at least as tall as the visible viewport.
+   * 100dvh = "dynamic viewport height" — on phones it matches what you
+   * actually see (unlike 100vh which can include space under the URL bar).
+   */
   html {
     font-size: 100%;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    /* Match viewport so body can fill it without extra scroll on mobile */
     min-height: 100dvh;
   }
 
+  /*
+   * Body: background, font, and safe-area padding for notched devices (e.g. iPhone).
+   * min-height: 100dvh + overflow-x: hidden keeps the page one viewport tall
+   * when content is short, so you don't get a tiny unnecessary scroll on mobile.
+   */
   body {
     @apply bg-slate-950 text-slate-50 antialiased;
     background: radial-gradient(circle at top, #020617 0, #020617 40%, #020617 100%);
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
-    /* Exactly one viewport when content fits; no rubber-band scroll on mobile */
     min-height: 100dvh;
     overflow-x: hidden;
-    /* Safe area for notched devices (e.g. iPhone) */
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
     padding-top: env(safe-area-inset-top);
@@ -31,19 +50,24 @@
   }
 }
 
+/* ========== COMPONENT LAYER ========== */
+/* Reusable class combinations (e.g. .btn, .btn-primary). */
+
 @layer components {
-  /* Touch-friendly buttons: min 44px height, readable font */
+  /* Base button: big enough to tap on mobile (min 44px), rounded, with padding. */
   .btn {
     @apply inline-flex items-center justify-center rounded-lg font-medium transition min-h-[44px] px-4 py-3 text-base;
   }
+  /* Primary action: sky blue background, dark text. */
   .btn-primary {
     @apply bg-sky-500 text-slate-950 hover:bg-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2 focus:ring-offset-slate-950;
   }
+  /* Secondary / outline style. */
   .btn-outline {
     @apply border border-slate-600 text-slate-200 hover:border-slate-400 hover:text-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-950;
   }
 
-  /* Reduces tap delay on touch devices */
+  /* Reduces the 300ms tap delay on touch devices so buttons feel instant. */
   .touch-manipulation {
     touch-action: manipulation;
   }

@@ -1,19 +1,25 @@
 /**
- * Domain and database types for the web app.
- *
- * Domain types (Tag, Message, Owner) are the app-level shape (camelCase).
- * They are re-exported from the monorepo root so UI and API share one contract.
- *
- * Database types (TagRow, MessageRow, Database) match the Supabase/Postgres
- * schema (snake_case) and are used for typed client calls.
+ * TYPES — Data shapes used across the app
+ * ----------------------------------------
+ * This file defines:
+ * 1. Domain types (Tag, Message, Owner) — re-exported from the monorepo so
+ *    the UI and any APIs share the same idea of "a tag" or "a message".
+ * 2. Database row types (TagRow, MessageRow) — the exact shape Supabase
+ *    returns (snake_case columns like owner_id, created_at).
+ * 3. Mapper functions — turn a row from the DB into a domain object (camelCase).
+ * 4. Database — the full Supabase schema type so we get autocomplete and
+ *    type safety when inserting/updating (e.g. .insert({ tag_id, content })).
  */
 
 import type { Tag, Message } from "@repo/types";
 
-// Re-export domain types from repo root — use these in components and API.
+// Use these in React components and API routes. They use camelCase (e.g. ownerId).
 export type { Tag, Message, Owner } from "@repo/types";
 
-// Supabase returns snake_case; these match the migration schema.
+/**
+ * One row from the "tags" table. Column names match the database (snake_case).
+ * We convert these to Tag (camelCase) using tagRowToTag().
+ */
 export interface TagRow {
   id: string;
   owner_id: string;
@@ -22,6 +28,9 @@ export interface TagRow {
   is_active: boolean;
 }
 
+/**
+ * One row from the "messages" table. Same idea: DB shape, then we map to Message.
+ */
 export interface MessageRow {
   id: string;
   tag_id: string;
@@ -31,7 +40,7 @@ export interface MessageRow {
   read: boolean;
 }
 
-/** Map a DB tag row to the domain Tag type. */
+/** Convert a tag row from the database into the app's Tag type (camelCase). */
 export function tagRowToTag(row: TagRow): Tag {
   return {
     id: row.id,
@@ -42,7 +51,7 @@ export function tagRowToTag(row: TagRow): Tag {
   };
 }
 
-/** Map a DB message row to the domain Message type. */
+/** Convert a message row from the database into the app's Message type (camelCase). */
 export function messageRowToMessage(row: MessageRow): Message {
   return {
     id: row.id,
@@ -54,7 +63,11 @@ export function messageRowToMessage(row: MessageRow): Message {
   };
 }
 
-/** Supabase Database type for typed client (matches migrations). */
+/**
+ * Full Supabase Database type. Matches the schema from our migrations.
+ * Used when creating the Supabase client so .from("tags") and .from("messages")
+ * know the exact Insert/Update/Row shapes (e.g. Insert requires tag_id and content).
+ */
 export interface Database {
   public: {
     Tables: {
