@@ -2,14 +2,9 @@
  * TAG QR — QR code for a tag's finder link
  * -----------------------------------------
  * Used on the dashboard when the user clicks "Show QR" on a tag. We
- * generate a QR code that encodes the finder URL (e.g. https://app.example.com/f/abc123).
- * The finder can scan it with their phone to open the finder page and send
- * a message. We also show the URL as text and a "Download PNG" button so
- * the user can print or share the QR.
- *
- * We use the "qrcode" library to turn the URL into a data URL (base64 image)
- * in the browser. We need typeof window !== "undefined" because this can
- * run during SSR where window doesn't exist.
+ * generate a QR code that encodes the finder URL so someone can scan it
+ * and open the page where they can send an anonymous message. We also
+ * show the URL as text and a "Download PNG" button for printing or sharing.
  */
 
 "use client";
@@ -20,15 +15,31 @@ import QRCode from "qrcode";
 type Props = { tagId: string; label?: string | null };
 
 export function TagQR({ tagId, label }: Props) {
+  // The QR image as a data URL (base64). null until generation finishes.
   const [dataUrl, setDataUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Build the full URL only on the client (window.origin)
+  /**
+   * WHY we build the full URL only on the client:
+   * - window.location.origin (e.g. https://app.example.com) exists only in the
+   *   browser. During Server-Side Rendering (SSR), Next.js runs this component
+   *   on the server where there is no "window" — so we'd get a ReferenceError.
+   * - By checking typeof window !== "undefined", we use the real origin when
+   *   the component runs in the browser, and an empty string during SSR so we
+   *   don't try to generate a QR for an invalid URL. The useEffect below
+   *   only runs QRCode.toDataURL when finderUrl is non-empty (i.e. on the client).
+   */
   const finderUrl =
     typeof window !== "undefined"
       ? `${window.location.origin}/f/${tagId}`
       : "";
 
+  /**
+   * Generate the QR code image when we have a valid finderUrl (client-side).
+   * QRCode.toDataURL is async and returns a promise; we store the result in
+   * state so we can use it in an <img src={dataUrl} />. width/margin control
+   * the size and quiet zone of the QR for reliable scanning.
+   */
   useEffect(() => {
     if (!finderUrl) return;
     QRCode.toDataURL(finderUrl, { width: 256, margin: 2 })
@@ -36,6 +47,14 @@ export function TagQR({ tagId, label }: Props) {
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to generate QR"));
   }, [finderUrl]);
 
+  /**
+   * handleDownload: programmatically trigger a file download of the QR as PNG.
+   * We use useCallback so the function reference is stable and safe to pass
+   * to onClick (avoids unnecessary re-renders of the button). We create a
+   * temporary <a> with download attribute and .click() it — the browser then
+   * downloads the data URL as a file. The filename includes the label (sanitized
+   * for spaces) and first 8 chars of tagId so the user can tell files apart.
+   */
   const handleDownload = useCallback(() => {
     if (!dataUrl) return;
     const link = document.createElement("a");
@@ -44,10 +63,12 @@ export function TagQR({ tagId, label }: Props) {
     link.click();
   }, [dataUrl, tagId, label]);
 
+  // Show error state if QR generation failed (e.g. invalid URL or library error).
   if (error) {
     return <p className="text-sm text-red-400">{error}</p>;
   }
 
+  // Show loading state until we have the image. Happens on first paint on client.
   if (!dataUrl) {
     return <p className="text-sm text-slate-400">Generating QR…</p>;
   }

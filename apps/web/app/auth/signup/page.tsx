@@ -1,11 +1,13 @@
 /**
- * SIGNUP PAGE
- * -----------
- * Route: /auth/signup
+ * SIGNUP PAGE — Route: /auth/signup
+ * ---------------------------------
  * New users enter email and password here. Supabase may require email
- * confirmation (depends on project settings). We show either an error,
- * a success message ("Check your email"), or redirect to the dashboard
- * if a session is created immediately.
+ * confirmation (configured in the Supabase dashboard). So after signUp():
+ * - If there's an error (e.g. weak password), we show it.
+ * - If data.user exists but data.session is null, Supabase is waiting for
+ *   email confirmation — we show "Check your email".
+ * - If data.session exists, they're already signed in (e.g. confirmation
+ *   disabled), so we redirect to the dashboard.
  */
 
 "use client";
@@ -21,8 +23,14 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null); // Success message (e.g. "Check your email")
+  const [message, setMessage] = useState<string | null>(null);
 
+  /**
+   * handleSubmit: call supabase.auth.signUp(). We clear previous error and
+   * message so the user doesn't see stale feedback. The response tells us
+   * whether we got a session (redirect to dashboard), need email confirmation
+   * (show message), or got an error (show error string).
+   */
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setError(null);
@@ -41,7 +49,6 @@ export default function SignupPage() {
       return;
     }
 
-    // Supabase can be set to require email confirmation. If so, user exists but no session yet.
     if (data.user && !data.session) {
       setMessage(
         "Signup successful. Please check your email to confirm your account before logging in."
@@ -49,7 +56,6 @@ export default function SignupPage() {
       return;
     }
 
-    // If we get a session right away, send them to the dashboard
     if (data.session) {
       router.push("/dashboard");
       return;

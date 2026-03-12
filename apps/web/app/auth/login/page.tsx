@@ -1,11 +1,11 @@
 /**
- * LOGIN PAGE
- * ----------
- * Route: /auth/login
+ * LOGIN PAGE — Route: /auth/login
+ * --------------------------------
  * Lets existing users sign in with email and password. On success we
- * redirect to the dashboard. The header (AuthStatus) still shows so
- * users can navigate; "Back home" is in the page content so it never
- * overlaps the toolbar on mobile.
+ * redirect to /dashboard. We use router.push so the transition is
+ * client-side (no full page reload). The "Back home" link is in the
+ * page content (not absolute-positioned) so it never overlaps the
+ * header on small screens when the keyboard is open or the viewport is narrow.
  */
 
 "use client";
@@ -17,14 +17,20 @@ import { supabase } from "../../../lib/supabaseClient";
 
 export default function LoginPage() {
   const router = useRouter();
-  // Form fields
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * handleSubmit: call Supabase signInWithPassword. We prevent default form
+   * submit so the page doesn't reload. We set loading true/false so the
+   * button shows "Logging in…" and is disabled during the request. On
+   * success we navigate to the dashboard; on failure we show the error
+   * message from Supabase (e.g. "Invalid login credentials").
+   */
   const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault(); // Don't reload the page
+    event.preventDefault();
     setError(null);
     setLoading(true);
 
@@ -40,14 +46,12 @@ export default function LoginPage() {
       return;
     }
 
-    // Success: go to the dashboard
     router.push("/dashboard");
   };
 
   return (
     <main className="flex-1 flex flex-col items-center justify-center px-4 py-8 sm:py-12">
       <div className="w-full max-w-sm space-y-6">
-        {/* In-flow back link (avoids overlapping the header on small screens) */}
         <div className="flex justify-start">
           <Link
             href="/"

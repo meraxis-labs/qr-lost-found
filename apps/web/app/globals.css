@@ -1,9 +1,10 @@
 /**
  * GLOBAL STYLES
  * -------------
- * Applied to the whole app. Tailwind's @tailwind directives pull in its
- * base styles, component classes, and utilities. We then override and
- * extend for our app (dark theme, safe areas, reusable button styles).
+ * Applied to the whole app via the root layout. @tailwind base/components/utilities
+ * inject Tailwind's reset, component layer, and utility classes. We then
+ * override and add styles for the app: dark theme, viewport height behavior,
+ * safe areas for notched phones, and reusable button classes.
  */
 
 @tailwind base;
@@ -11,19 +12,25 @@
 @tailwind utilities;
 
 /* ========== BASE LAYER ========== */
-/* Styles that affect fundamental elements (html, body). */
+/* Styles for html and body. These affect every page. */
 
 @layer base {
-  /* Use dark color scheme so native UI (scrollbars, etc.) matches our dark theme. */
+  /*
+   * color-scheme: dark tells the browser to use dark scrollbars, form controls,
+   * and other native UI so they don't look bright white on our dark background.
+   */
   :root {
     color-scheme: dark;
   }
 
   /*
-   * HTML: prevent mobile browsers from zooming when an input is focused,
-   * and make the root at least as tall as the visible viewport.
-   * 100dvh = "dynamic viewport height" — on phones it matches what you
-   * actually see (unlike 100vh which can include space under the URL bar).
+   * html:
+   * - font-size and text-size-adjust: prevent mobile browsers from zooming in
+   *   when the user focuses an input (some browsers zoom if the font is small).
+   * - min-height: 100dvh — the root is at least as tall as the visible viewport.
+   *   We use 100dvh (dynamic viewport height) instead of 100vh because on
+   *   mobile 100vh can include the area under the browser chrome, which causes
+   *   a small unwanted scroll. 100dvh tracks the actually visible height.
    */
   html {
     font-size: 100%;
@@ -33,9 +40,15 @@
   }
 
   /*
-   * Body: background, font, and safe-area padding for notched devices (e.g. iPhone).
-   * min-height: 100dvh + overflow-x: hidden keeps the page one viewport tall
-   * when content is short, so you don't get a tiny unnecessary scroll on mobile.
+   * body:
+   * - Background and font set the app's look. The gradient is subtle (same
+   *   color) so it doesn't distract.
+   * - min-height: 100dvh and overflow-x: hidden — same viewport logic as html;
+   *   we hide horizontal overflow so a wide element doesn't create horizontal
+   *   scroll.
+   * - padding with env(safe-area-inset-*) — on notched devices (e.g. iPhone X+)
+   *   these add padding so content isn't hidden behind the notch or home
+   *   indicator. The browser provides the inset values.
    */
   body {
     @apply bg-slate-950 text-slate-50 antialiased;
@@ -51,23 +64,28 @@
 }
 
 /* ========== COMPONENT LAYER ========== */
-/* Reusable class combinations (e.g. .btn, .btn-primary). */
+/* Reusable class combinations. Use these like class="btn btn-primary". */
 
 @layer components {
-  /* Base button: big enough to tap on mobile (min 44px), rounded, with padding. */
+  /*
+   * .btn — base button style. min-h-[44px] is a common minimum for touch
+   * targets so fingers can tap easily. We use this on the landing "Get started"
+   * button and anywhere we want consistent button sizing.
+   */
   .btn {
     @apply inline-flex items-center justify-center rounded-lg font-medium transition min-h-[44px] px-4 py-3 text-base;
   }
-  /* Primary action: sky blue background, dark text. */
   .btn-primary {
     @apply bg-sky-500 text-slate-950 hover:bg-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2 focus:ring-offset-slate-950;
   }
-  /* Secondary / outline style. */
   .btn-outline {
     @apply border border-slate-600 text-slate-200 hover:border-slate-400 hover:text-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-950;
   }
 
-  /* Reduces the 300ms tap delay on touch devices so buttons feel instant. */
+  /*
+   * touch-manipulation removes the ~300ms tap delay that some mobile browsers
+   * add (to detect double-tap zoom). Buttons feel more responsive with this.
+   */
   .touch-manipulation {
     touch-action: manipulation;
   }

@@ -1,24 +1,25 @@
 /**
  * TYPES — Data shapes used across the app
  * ----------------------------------------
- * This file defines:
- * 1. Domain types (Tag, Message, Owner) — re-exported from the monorepo so
- *    the UI and any APIs share the same idea of "a tag" or "a message".
- * 2. Database row types (TagRow, MessageRow) — the exact shape Supabase
- *    returns (snake_case columns like owner_id, created_at).
- * 3. Mapper functions — turn a row from the DB into a domain object (camelCase).
- * 4. Database — the full Supabase schema type so we get autocomplete and
- *    type safety when inserting/updating (e.g. .insert({ tag_id, content })).
+ * We have two kinds of types:
+ * 1. Domain types (Tag, Message, Owner) — used in React components and API
+ *    logic. They use camelCase (ownerId, createdAt). Re-exported from the
+ *    monorepo so the whole repo shares one contract.
+ * 2. Database row types (TagRow, MessageRow) — the exact shape returned by
+ *    Supabase/Postgres, with snake_case column names (owner_id, created_at).
+ * We convert rows to domain types with tagRowToTag and messageRowToMessage so
+ * the UI always works with camelCase. The Database interface describes the
+ * full schema for the Supabase client so .insert() and .update() are typed.
  */
 
 import type { Tag, Message } from "@repo/types";
 
-// Use these in React components and API routes. They use camelCase (e.g. ownerId).
 export type { Tag, Message, Owner } from "@repo/types";
 
 /**
- * One row from the "tags" table. Column names match the database (snake_case).
- * We convert these to Tag (camelCase) using tagRowToTag().
+ * One row from the "tags" table. Column names match the database exactly
+ * (snake_case). We never use these directly in the UI; we convert with
+ * tagRowToTag() so components receive Tag (camelCase).
  */
 export interface TagRow {
   id: string;
@@ -29,7 +30,7 @@ export interface TagRow {
 }
 
 /**
- * One row from the "messages" table. Same idea: DB shape, then we map to Message.
+ * One row from the "messages" table. Same idea: this is the raw DB shape.
  */
 export interface MessageRow {
   id: string;
@@ -40,7 +41,11 @@ export interface MessageRow {
   read: boolean;
 }
 
-/** Convert a tag row from the database into the app's Tag type (camelCase). */
+/**
+ * Converts a tag row (snake_case) from the database into the domain Tag type
+ * (camelCase). We use ?? undefined so null in the DB becomes undefined in
+ * the app where we often prefer optional fields.
+ */
 export function tagRowToTag(row: TagRow): Tag {
   return {
     id: row.id,
@@ -51,7 +56,9 @@ export function tagRowToTag(row: TagRow): Tag {
   };
 }
 
-/** Convert a message row from the database into the app's Message type (camelCase). */
+/**
+ * Converts a message row (snake_case) to the domain Message type (camelCase).
+ */
 export function messageRowToMessage(row: MessageRow): Message {
   return {
     id: row.id,
@@ -64,9 +71,12 @@ export function messageRowToMessage(row: MessageRow): Message {
 }
 
 /**
- * Full Supabase Database type. Matches the schema from our migrations.
- * Used when creating the Supabase client so .from("tags") and .from("messages")
- * know the exact Insert/Update/Row shapes (e.g. Insert requires tag_id and content).
+ * Full Supabase Database type. It mirrors our Postgres schema (tables, columns).
+ * We pass this to createClient<Database>() so that when we call
+ * supabase.from("tags").insert({ ... }), TypeScript knows which columns exist
+ * and which are required. Row = shape when reading; Insert = shape when
+ * inserting (id and created_at are optional because the DB can generate them);
+ * Update = partial shape for updates.
  */
 export interface Database {
   public: {

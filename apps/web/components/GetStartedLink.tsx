@@ -1,12 +1,11 @@
 /**
  * GET STARTED LINK — Smart CTA on the landing page
  * -------------------------------------------------
- * Renders a single button that goes to:
- * - /dashboard if the user is already logged in
- * - /auth/signup if they're not
- * We check auth with supabase.auth.getUser() on mount and subscribe to
- * onAuthStateChange so the label and destination update if the user signs
- * in or out without leaving the page.
+ * A single button that goes to /dashboard if the user is logged in, or
+ * /auth/signup if not. The button label changes too ("Go to dashboard" vs
+ * "Get started"). We need to know auth state, so we call getUser() on mount
+ * and subscribe to onAuthStateChange so we update if they sign in/out without
+ * leaving the page.
  */
 
 "use client";
@@ -18,6 +17,12 @@ export function GetStartedLink() {
   const [user, setUser] = useState<{ id: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
+  /**
+   * We only need the user's id to decide href and label; we don't need the
+   * full User object. isMounted prevents setState after unmount (e.g. user
+   * navigates away before getUser() resolves). We unsubscribe from
+   * onAuthStateChange in the cleanup so we don't leave a listener active.
+   */
   useEffect(() => {
     let isMounted = true;
 
@@ -43,6 +48,7 @@ export function GetStartedLink() {
     };
   }, []);
 
+  // Single destination: dashboard if logged in, signup otherwise.
   const href = user ? "/dashboard" : "/auth/signup";
 
   return (

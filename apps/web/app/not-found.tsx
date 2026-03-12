@@ -1,10 +1,11 @@
 /**
  * NOT FOUND (404) PAGE
  * --------------------
- * Shown when the user visits a URL that doesn't match any route (e.g. a
- * bad or deactivated tag link like /f/invalid-id). We use the same
- * layout as the rest of the app (header + content area) and offer a link
- * back to the home page.
+ * Shown when the user hits a URL that doesn't match any route — for example
+ * /f/invalid-id or a deactivated tag. Next.js renders this when we call
+ * notFound() from a page (e.g. the finder page when the tag doesn't exist).
+ * We use the same layout as the rest of the app (header + content) and
+ * provide a link back to home so the user isn't stuck.
  */
 
 import Link from "next/link";

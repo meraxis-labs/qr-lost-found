@@ -1,14 +1,11 @@
 /**
- * DASHBOARD PAGE
- * --------------
- * Route: /dashboard
- * Only for logged-in users. Shows:
- * 1. A form to create a new tag (label like "My Wallet").
- * 2. A list of the user's tags; each tag can show its finder link, a QR code,
- *    and any messages from finders.
- * If the user isn't logged in, we redirect them to the login page.
- * We load tags and messages from Supabase and mark messages as read when
- * they're first displayed.
+ * DASHBOARD PAGE — Route: /dashboard
+ * -----------------------------------
+ * Only for logged-in users. Shows a form to create tags and a list of the
+ * user's tags; each tag can show its finder link, a QR code (via TagQR),
+ * and messages from finders. If not logged in we redirect to /auth/login.
+ * We load tags and messages from Supabase; when we first load messages we
+ * mark them as read so the owner has a clear "seen" state.
  */
 
 "use client";
@@ -29,9 +26,16 @@ export default function DashboardPage() {
   const [createLabel, setCreateLabel] = useState("");
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
-  const [expandedQRTagId, setExpandedQRTagId] = useState<string | null>(null); // Which tag's QR is visible
+  const [expandedQRTagId, setExpandedQRTagId] = useState<string | null>(null);
 
-  // --- Auth check: redirect to login if not signed in ---
+  /**
+   * Effect 1 — Auth guard: On mount we check if there's a logged-in user.
+   * If not (error or no data.user), we redirect to login with router.replace
+   * (replace so the user can't go "back" into the dashboard without logging in).
+   * We only need user.id for the rest of the page, so we set user to { id }.
+   * isMounted prevents setState after unmount (e.g. redirect happens before
+   * getUser() resolves).
+   */
   useEffect(() => {
     let isMounted = true;
 
@@ -49,7 +53,15 @@ export default function DashboardPage() {
     };
   }, [router]);
 
-  // --- Load this user's tags from the database ---
+  /**
+   * Effect 2 — Load tags: Once we have a user we fetch all tags where
+   * owner_id equals that user's id. We order by created_at descending so
+   * newest first. The DB returns rows in snake_case (TagRow); we map them
+   * to Tag (camelCase) with tagRowToTag for use in the UI. We set loading
+   * to false in finally so the UI shows "Loading…" until this request
+   * completes (or errors). If the request fails we set tags to [] so we
+   * don't show stale data.
+   */
   useEffect(() => {
     if (!user) return;
 
@@ -79,7 +91,14 @@ export default function DashboardPage() {
     };
   }, [user]);
 
-  // --- Load messages for all tags and mark them as read ---
+  /**
+   * Effect 3 — Load messages and mark as read: Once we have tags we fetch
+   * all messages for those tag IDs. We group them by tag_id (messagesByTagId)
+   * so each tag card can show its own messages. We also collect unread
+   * message IDs and call update({ read: true }) so the first time the owner
+   * sees the dashboard after a new message, we mark it read. We use .in("tag_id", tagIds)
+   * to get messages for all tags in one query instead of one per tag.
+   */
   useEffect(() => {
     if (tags.length === 0) return;
     const tagIds = tags.map((t) => t.id);
@@ -111,6 +130,14 @@ export default function DashboardPage() {
     };
   }, [tags]);
 
+  /**
+   * handleCreateTag: On form submit we insert a new row into the "tags" table
+   * with the current user's id as owner_id, the trimmed label (or null if empty),
+   * and is_active: true. We use .select().single() so Supabase returns the
+   * newly created row (including its id and created_at). We then prepend it
+   * to the tags state so the new tag appears at the top without refetching,
+   * and clear the input. If the insert fails we show the error message.
+   */
   const handleCreateTag = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !createLabel.trim()) return;
@@ -139,8 +166,13 @@ export default function DashboardPage() {
     }
   };
 
+  /**
+   * While we're redirecting to login (user is null but we haven't left the
+   * page yet), we return null so we don't briefly flash the dashboard
+   * content. The first effect will call router.replace and then we'll unmount.
+   */
   if (!user) {
-    return null; // We're redirecting to login; avoid flashing dashboard content
+    return null;
   }
 
   return (
@@ -156,7 +188,6 @@ export default function DashboardPage() {
           </a>
         </div>
 
-        {/* Form to add a new tag */}
         <form
           onSubmit={handleCreateTag}
           className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-5 mb-6"
@@ -186,7 +217,6 @@ export default function DashboardPage() {
           )}
         </form>
 
-        {/* List of tags, or empty state, or loading */}
         {loading ? (
           <p className="text-base text-slate-400">Loading your tags…</p>
         ) : tags.length === 0 ? (

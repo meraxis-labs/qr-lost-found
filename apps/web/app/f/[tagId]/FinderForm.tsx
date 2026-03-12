@@ -1,12 +1,10 @@
 /**
- * FINDER FORM
- * ------------
- * Used on the finder page (/f/[tagId]). Lets the finder type a message and
- * submit it. We insert a row into the "messages" table with the tag_id and
- * content; the owner sees it in their dashboard. We don't collect the
- * finder's email or name — it's anonymous.
- *
- * After a successful send we show a success message and hide the form.
+ * FINDER FORM — Anonymous message form on the finder page
+ * -------------------------------------------------------
+ * Used on /f/[tagId]. The finder types a message and submits; we insert a row
+ * into the "messages" table with tag_id and content. The owner sees it in
+ * their dashboard. We don't collect email or name — it's anonymous. After
+ * success we show a confirmation and hide the form so they can't double-submit.
  */
 
 "use client";
@@ -17,6 +15,7 @@ import type { Database } from "@/lib/types";
 
 type Props = { tagId: string };
 
+// Type for inserting a row into messages — ensures we only send allowed columns.
 type MessageInsert = Database["public"]["Tables"]["messages"]["Insert"];
 
 export function FinderForm({ tagId }: Props) {
@@ -25,6 +24,14 @@ export function FinderForm({ tagId }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
 
+  /**
+   * handleSubmit: on form submit we insert one row into the messages table.
+   * We use the Database type so TypeScript knows the shape (tag_id, content).
+   * We don't set finder_token here — the DB or RLS can handle anonymity.
+   * After success we set sent=true so we show the success message instead of
+   * the form; we also clear content so if the component re-renders we don't
+   * show stale text.
+   */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -47,6 +54,7 @@ export function FinderForm({ tagId }: Props) {
     setContent("");
   };
 
+  // After a successful send we replace the form with a short confirmation.
   if (sent) {
     return (
       <div className="rounded-lg bg-emerald-950/40 border border-emerald-900 p-4 text-base text-emerald-200 leading-relaxed">

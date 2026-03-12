@@ -1,15 +1,10 @@
 /**
  * AUTH STATUS — Top bar for login and navigation
  * ----------------------------------------------
- * Rendered in the root layout so it appears on every page. It shows:
- * - Left: "Tagback" link to home
- * - Right: If loading, "…". If logged in, the user's email + "Log out".
- *          If not logged in, "Log in" and "Sign up" links.
- *
- * We use Supabase Auth: getUser() on mount to know the current user, and
- * onAuthStateChange() to update when the user signs in or out in another tab
- * or after a redirect. The header is in normal document flow (not fixed) so
- * page content never overlaps it on mobile.
+ * Rendered in the root layout so it appears on every page. Shows "Tagback"
+ * (home link) on the left; on the right: loading "…", or user email + Log out,
+ * or Log in + Sign up. The header stays in document flow (not position:fixed)
+ * so page content never overlaps it on mobile.
  */
 
 "use client";
@@ -26,16 +21,28 @@ export function AuthStatus() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * On mount we do two things:
+   * 1. getUser() — Check if there's already a session (e.g. user just landed
+   *    or came back from login). This runs once when the component mounts.
+   * 2. onAuthStateChange() — Subscribe to sign-in/sign-out events so we update
+   *    the UI when the user logs in/out in this tab or another tab, without
+   *    reloading the page.
+   * We use isMounted so we don't call setState after the component has unmounted
+   * (e.g. if the user navigates away before the promise resolves), which would
+   * cause React warnings and possible bugs.
+   */
   useEffect(() => {
     let isMounted = true;
 
-    // Check if there's already a session (e.g. user just landed on the site)
     supabase.auth
       .getUser()
       .then(({ data, error: err }) => {
         if (!isMounted) return;
         if (err) {
           const msg = err.message?.toLowerCase() ?? "";
+          // "Missing session" or "session not found" is normal when logged out;
+          // we only show other errors (e.g. network) in the UI.
           const isNoSession =
             msg.includes("session") &&
             (msg.includes("missing") || msg.includes("not found"));
@@ -49,7 +56,6 @@ export function AuthStatus() {
         if (isMounted) setLoading(false);
       });
 
-    // Listen for sign-in / sign-out so we update the UI without reloading
     const {
       data: { subscription }
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -57,12 +63,18 @@ export function AuthStatus() {
       setUser(session?.user ?? null);
     });
 
+    // Cleanup: unsubscribe when the component unmounts so we don't leak listeners.
     return () => {
       isMounted = false;
       subscription.unsubscribe();
     };
   }, []);
 
+  /**
+   * handleLogout: sign out via Supabase and redirect to home. We clear any
+   * previous error so the user doesn't see an old message. router.push("/")
+   * sends them to the landing page after the session is cleared.
+   */
   const handleLogout = async () => {
     setError(null);
     const { error: err } = await supabase.auth.signOut();

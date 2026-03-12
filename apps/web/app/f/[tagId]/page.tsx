@@ -1,15 +1,16 @@
 /**
- * FINDER PAGE (public, no login required)
- * ---------------------------------------
- * Route: /f/[tagId] — e.g. /f/abc123-def456
- * When someone scans a Tagback QR code or opens a finder link, they land
- * here. We look up the tag by ID; if it exists and is active, we show
- * the FinderForm so they can send an anonymous message to the owner.
- * If the tag doesn't exist or is inactive, we show the 404 (not-found) page.
+ * FINDER PAGE — Route: /f/[tagId] (e.g. /f/abc123-def456)
+ * --------------------------------------------------------
+ * Public page: no login required. When someone scans a Tagback QR or opens
+ * a finder link they land here. We look up the tag by ID; if it exists and
+ * is_active we show the FinderForm so they can send an anonymous message.
+ * If the tag doesn't exist or is inactive we call notFound() and Next.js
+ * renders the not-found.tsx page.
  *
- * This is a Server Component: we fetch the tag on the server so the
- * page can render without a loading spinner. The form itself is a Client
- * Component (FinderForm) because it needs useState and form submission.
+ * This is a Server Component: we await params and run the Supabase query on
+ * the server, so the initial HTML already has the tag (or 404). That avoids
+ * a loading spinner. The form is a Client Component (FinderForm) because it
+ * needs useState and form submission.
  */
 
 import { notFound } from "next/navigation";
@@ -20,6 +21,7 @@ import { FinderForm } from "@/app/f/[tagId]/FinderForm";
 type Props = { params: Promise<{ tagId: string }> };
 
 export default async function FinderPage({ params }: Props) {
+  // In Next.js 15, params is a Promise; we await it to get { tagId }.
   const { tagId } = await params;
 
   const { data, error } = await supabase
@@ -32,7 +34,7 @@ export default async function FinderPage({ params }: Props) {
   const row = data as Pick<TagRow, "id" | "label" | "is_active"> | null;
 
   if (error || !row) {
-    notFound(); // Renders the not-found.tsx page
+    notFound();
   }
 
   return (
