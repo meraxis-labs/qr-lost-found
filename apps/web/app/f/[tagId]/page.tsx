@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import type { TagRow } from "@/lib/types";
-import { FinderForm } from "./FinderForm";
+import { FinderForm } from "@/app/f/[tagId]/FinderForm";
 
 type Props = { params: Promise<{ tagId: string }> };
 
@@ -22,7 +22,7 @@ export default async function FinderPage({ params }: Props) {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-4 py-6 sm:py-8">
+    <main className="flex-1 flex flex-col min-h-0 items-center justify-center px-4 py-6 sm:py-8">
       <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-950/60 p-5 sm:p-6 shadow-xl">
         <h1 className="text-xl sm:text-2xl font-semibold text-slate-50 mb-2">
           You found something?
