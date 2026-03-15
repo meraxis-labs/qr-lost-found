@@ -27,6 +27,7 @@ export default function CustomizeFinderPage() {
 
   const [user, setUser] = useState<{ id: string } | null>(null);
   const [tag, setTag] = useState<Tag | null>(null);
+  const [allTags, setAllTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
   const [tagLabel, setTagLabel] = useState("");
   const [tagIcon, setTagIcon] = useState<string | null>(null);
@@ -58,16 +59,21 @@ export default function CustomizeFinderPage() {
       supabase
         .from("tags")
         .select("*")
-        .eq("id", tagId)
         .eq("owner_id", user.id)
-        .single()
     ).then(({ data, error }) => {
       if (!isMounted) return;
       if (error || !data) {
         router.replace("/dashboard");
         return;
       }
-      const t = tagRowToTag(data as TagRow);
+      const rows = (data ?? []) as TagRow[];
+      const tagsList = rows.map((r) => tagRowToTag(r));
+      setAllTags(tagsList);
+      const t = tagsList.find((x) => x.id === tagId) ?? null;
+      if (!t) {
+        router.replace("/dashboard");
+        return;
+      }
       setTag(t);
       setTagLabel(t.label ?? "");
       setTagIcon(t.icon ?? null);
@@ -86,11 +92,21 @@ export default function CustomizeFinderPage() {
     if (!user || !tagId) return;
     setSaveError(null);
     setSaveSuccess(false);
+
+    const trimmedLabel = tagLabel.trim();
+    const nameExists = allTags.some(
+      (t) => t.id !== tagId && (t.label ?? "").trim().toLowerCase() === trimmedLabel.toLowerCase()
+    );
+    if (nameExists) {
+      setSaveError("A tag with this name already exists. Please choose a different name.");
+      return;
+    }
+
     setSaving(true);
     const { error } = await supabase
       .from("tags")
       .update({
-        label: tagLabel.trim() || null,
+        label: trimmedLabel || null,
         icon: tagIcon || null,
         finder_title: finderTitle.trim() || null,
         finder_message: finderMessage.trim() || null,
@@ -107,7 +123,7 @@ export default function CustomizeFinderPage() {
       prev
         ? {
             ...prev,
-            label: tagLabel.trim() || undefined,
+            label: trimmedLabel || undefined,
             icon: tagIcon ?? undefined,
             finderTitle: finderTitle.trim() || undefined,
             finderMessage: finderMessage.trim() || undefined,

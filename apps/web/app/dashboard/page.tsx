@@ -148,13 +148,22 @@ export default function DashboardPage() {
     e.preventDefault();
     if (!user || !createLabel.trim()) return;
     setCreateError(null);
-    setCreating(true);
 
+    const trimmedLabel = createLabel.trim();
+    const nameExists = tags.some(
+      (t) => (t.label ?? "").trim().toLowerCase() === trimmedLabel.toLowerCase()
+    );
+    if (nameExists) {
+      setCreateError("A tag with this name already exists. Please choose a different name.");
+      return;
+    }
+
+    setCreating(true);
     const { data, error } = await supabase
       .from("tags")
       .insert({
         owner_id: user.id,
-        label: createLabel.trim() || null,
+        label: trimmedLabel || null,
         is_active: true,
         icon: createIcon || null,
       } as never)
