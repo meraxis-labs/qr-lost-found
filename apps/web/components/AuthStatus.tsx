@@ -101,6 +101,12 @@ export function AuthStatus() {
             </span>
           ) : user ? (
             <>
+              <Link
+                href="/dashboard/settings"
+                className="text-slate-400 hover:text-slate-200 text-sm transition-colors whitespace-nowrap"
+              >
+                Settings
+              </Link>
               <span
                 className="text-slate-500 text-sm truncate max-w-[120px] sm:max-w-[200px]"
                 title={user.email ?? undefined}
