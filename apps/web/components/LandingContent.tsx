@@ -15,48 +15,16 @@ import { supabase } from "@/lib/supabaseClient";
 import { GetStartedLink } from "./GetStartedLink";
 
 const HOW_IT_WORKS = [
-  {
-    step: 1,
-    title: "Create a tag",
-    description:
-      "Sign up free, give your item a name (e.g. “Keys”, “Backpack”), and we generate a unique QR code. You can add a short note so finders know what they’re looking at.",
-  },
-  {
-    step: 2,
-    title: "Print & stick the QR",
-    description:
-      "Download or print the QR sticker and attach it to your item. Anyone who finds it can scan with their phone camera—no app or account needed.",
-  },
-  {
-    step: 3,
-    title: "Finder scans and messages you",
-    description:
-      "When someone finds your item, they scan the QR and land on a simple “You found something?” page. They type a message and send—anonymously. Your phone and email stay hidden.",
-  },
-  {
-    step: 4,
-    title: "You get the message in your dashboard",
-    description:
-      "New messages show up in your Tagback dashboard. Reply through the link we provide—only then do you choose whether to share contact details. No spam, no random calls.",
-  },
+  { step: 1, title: "Create a tag", description: "Name your item, get a unique QR." },
+  { step: 2, title: "Stick the QR", description: "Print or show it—finders scan with their camera." },
+  { step: 3, title: "They message you", description: "No app or account. Your contact stays hidden." },
+  { step: 4, title: "Reply in dashboard", description: "Messages land here. You choose when to share details." },
 ];
 
 const FEATURES = [
-  {
-    title: "Your contact stays private",
-    description:
-      "Finders never see your phone number or email unless you reply. No more writing your number on a tag for the whole world to see.",
-  },
-  {
-    title: "Zero friction for finders",
-    description:
-      "No app, no signup, no download. They scan the QR, type where they found it and how to reach them, and send. Takes seconds.",
-  },
-  {
-    title: "One dashboard for all your tags",
-    description:
-      "Keys, wallet, backpack, luggage—manage every tag and every message in one place. Mark messages read, reply, and get your stuff back.",
-  },
+  { title: "Private", description: "Finders never see your number or email unless you reply." },
+  { title: "Simple for finders", description: "Scan, type, send—no signup." },
+  { title: "One dashboard", description: "All tags and messages in one place." },
 ];
 
 const USE_CASES = [
@@ -129,8 +97,7 @@ export function LandingContent() {
             <span className="text-sky-400"> privately.</span>
           </h1>
           <p className="text-slate-400 text-lg sm:text-xl max-w-xl mx-auto">
-            Sticker a QR on your stuff. If someone finds it, they message you—your
-            phone and email stay private until you choose to reply.
+            Sticker a QR on your stuff. Finders message you—no phone or email shared.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <GetStartedLink />
@@ -156,33 +123,30 @@ export function LandingContent() {
       {/* How it works */}
       <section
         id="how-it-works"
-        className="scroll-mt-6 border-t border-slate-800 bg-slate-900/40 px-4 sm:px-6 py-16 sm:py-20"
+        className="scroll-mt-6 border-t border-slate-800 bg-slate-900/40 px-4 sm:px-6 py-12 sm:py-16"
       >
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-100 text-center mb-4">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-100 text-center mb-8">
             How it works
           </h2>
-          <p className="text-slate-400 text-center max-w-xl mx-auto mb-12">
-            From creating your first tag to getting a message from a finder—here’s
-            the full workflow.
-          </p>
-          <ol className="space-y-10 sm:space-y-12">
+          <ol className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {HOW_IT_WORKS.map(({ step, title, description }) => (
-              <li key={step} className="flex gap-4 sm:gap-6">
+              <li
+                key={step}
+                className="rounded-xl bg-slate-800/60 border border-slate-700 p-4 sm:p-5 flex flex-col"
+              >
                 <span
-                  className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-sky-500/20 text-sky-400 font-semibold flex items-center justify-center text-lg"
+                  className="flex-shrink-0 w-8 h-8 rounded-full bg-sky-500/20 text-sky-400 font-semibold flex items-center justify-center text-sm mb-3"
                   aria-hidden
                 >
                   {step}
                 </span>
-                <div className="pt-0.5">
-                  <h3 className="text-lg sm:text-xl font-medium text-slate-200">
-                    {title}
-                  </h3>
-                  <p className="text-slate-400 mt-2 text-base sm:text-lg leading-relaxed">
-                    {description}
-                  </p>
-                </div>
+                <h3 className="text-slate-200 font-medium text-sm sm:text-base">
+                  {title}
+                </h3>
+                <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                  {description}
+                </p>
               </li>
             ))}
           </ol>
@@ -190,58 +154,27 @@ export function LandingContent() {
       </section>
 
       {/* Features */}
-      <section className="border-t border-slate-800 px-4 sm:px-6 py-16 sm:py-20">
+      <section className="border-t border-slate-800 px-4 sm:px-6 py-10 sm:py-14">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-100 text-center mb-4">
-            Why Tagback?
-          </h2>
-          <p className="text-slate-400 text-center max-w-xl mx-auto mb-12">
-            Built for people who want their stuff back without handing out their
-            number to strangers.
-          </p>
-          <ul className="grid sm:grid-cols-3 gap-8 sm:gap-10">
+          <ul className="grid sm:grid-cols-3 gap-6 sm:gap-8">
             {FEATURES.map(({ title, description }) => (
-              <li key={title} className="text-center sm:text-left">
-                <h3 className="text-slate-200 font-medium text-base sm:text-lg">
-                  {title}
-                </h3>
-                <p className="text-slate-400 text-sm sm:text-base mt-2 leading-relaxed">
-                  {description}
-                </p>
+              <li key={title} className="text-center">
+                <h3 className="text-slate-200 font-medium">{title}</h3>
+                <p className="text-slate-400 text-sm mt-1">{description}</p>
               </li>
             ))}
           </ul>
         </div>
       </section>
 
-      {/* For finders */}
-      <section className="border-t border-slate-800 bg-slate-900/40 px-4 sm:px-6 py-12 sm:py-16">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-xl sm:text-2xl font-semibold text-slate-100 mb-3">
-            Found something with a Tagback QR?
-          </h2>
-          <p className="text-slate-400 text-base sm:text-lg leading-relaxed">
-            Scan the QR with your phone camera. You’ll see a short message from the
-            owner and a form to send them a note—no account or app required. They’ll
-            get your message and can reply to arrange return.
-          </p>
-        </div>
-      </section>
-
       {/* Use cases */}
-      <section className="border-t border-slate-800 px-4 sm:px-6 py-16 sm:py-20">
+      <section className="border-t border-slate-800 bg-slate-900/40 px-4 sm:px-6 py-10 sm:py-14">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-100 mb-4">
-            Tag what matters
-          </h2>
-          <p className="text-slate-400 text-base sm:text-lg mb-10 max-w-xl mx-auto">
-            Put a QR on anything you might lose—finders can reach you without ever
-            seeing your contact details.
-          </p>
-          <ul className="flex flex-wrap justify-center gap-3">
+          <h2 className="text-lg font-semibold text-slate-100 mb-4">Tag what matters</h2>
+          <ul className="flex flex-wrap justify-center gap-2 sm:gap-3">
             {USE_CASES.map((label) => (
               <li key={label}>
-                <span className="inline-block px-4 py-2 rounded-full bg-slate-800 text-slate-300 text-sm border border-slate-700">
+                <span className="inline-block px-3 py-1.5 rounded-full bg-slate-800 text-slate-300 text-sm border border-slate-700">
                   {label}
                 </span>
               </li>
@@ -251,15 +184,9 @@ export function LandingContent() {
       </section>
 
       {/* Final CTA */}
-      <section className="border-t border-slate-800 px-4 sm:px-6 py-16 sm:py-20">
-        <div className="max-w-xl mx-auto text-center space-y-6">
-          <h2 className="text-xl sm:text-2xl font-semibold text-slate-100">
-            Ready to get your stuff back?
-          </h2>
-          <p className="text-slate-400 text-base sm:text-lg">
-            Create your first tag in under a minute. Free to start—no credit card
-            required.
-          </p>
+      <section className="border-t border-slate-800 px-4 sm:px-6 py-12 sm:py-16">
+        <div className="max-w-xl mx-auto text-center space-y-4">
+          <h2 className="text-xl font-semibold text-slate-100">Ready to get your stuff back?</h2>
           <GetStartedLink />
           <p className="text-slate-500 text-sm">
             Already have an account?{" "}
