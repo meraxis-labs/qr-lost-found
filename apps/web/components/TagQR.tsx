@@ -75,6 +75,7 @@ export function TagQR({ tagId, label }: Props) {
 
   return (
     <div className="flex flex-col items-center gap-3 pt-2">
+      {/* eslint-disable-next-line @next/next/no-img-element -- QR is a data URL from qrcode lib; next/image does not apply */}
       <img
         src={dataUrl}
         alt={`QR code for ${label ?? "tag"} finder link`}

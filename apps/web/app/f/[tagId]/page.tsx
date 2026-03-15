@@ -45,7 +45,7 @@ export default async function FinderPage({ params }: Props) {
         </h1>
         <p className="text-base sm:text-sm text-slate-400 mb-4 leading-relaxed">
           This item has a Tagback tag. Send a short message to the owner
-          anonymously — they'll get it without seeing your contact info.
+          anonymously — they&apos;ll get it without seeing your contact info.
         </p>
         {row.label && (
           <p className="text-sm text-slate-500 mb-4">

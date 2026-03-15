@@ -11,6 +11,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { TagQR } from "@/components/TagQR";
@@ -180,12 +181,12 @@ export default function DashboardPage() {
       <div className="max-w-2xl w-full mx-auto">
         <div className="flex items-center justify-between gap-3 mb-6">
           <h1 className="text-xl sm:text-2xl font-semibold text-slate-50">My tags</h1>
-          <a
+          <Link
             href="/"
             className="text-sm text-slate-300 hover:text-slate-50 border border-slate-700 rounded-full px-4 py-2.5 min-h-[44px] inline-flex items-center touch-manipulation"
           >
             ← Home
-          </a>
+          </Link>
         </div>
 
         <form
