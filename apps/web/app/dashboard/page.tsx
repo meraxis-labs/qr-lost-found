@@ -28,6 +28,8 @@ export default function DashboardPage() {
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const [expandedQRTagId, setExpandedQRTagId] = useState<string | null>(null);
+  const [removingTagId, setRemovingTagId] = useState<string | null>(null);
+  const [removeError, setRemoveError] = useState<string | null>(null);
 
   /**
    * Effect 1 — Auth guard: On mount we check if there's a logged-in user.
@@ -168,6 +170,34 @@ export default function DashboardPage() {
   };
 
   /**
+   * handleRemoveTag: Delete a tag by id. The DB has ON DELETE CASCADE on messages,
+   * so the tag's messages are removed automatically. We only allow delete for the
+   * current user's tags (RLS enforces this). On success we remove the tag from
+   * local state and clear its messages from messagesByTagId.
+   */
+  const handleRemoveTag = async (tagId: string) => {
+    if (!user) return;
+    const tagLabel = tags.find((t) => t.id === tagId)?.label ?? "Unnamed tag";
+    if (!confirm(`Remove "${tagLabel}"? The finder link will stop working and any messages will be deleted.`)) {
+      return;
+    }
+    setRemoveError(null);
+    setRemovingTagId(tagId);
+    const { error } = await supabase.from("tags").delete().eq("id", tagId).eq("owner_id", user.id);
+    setRemovingTagId(null);
+    if (error) {
+      setRemoveError(error.message);
+      return;
+    }
+    setTags((prev) => prev.filter((t) => t.id !== tagId));
+    setMessagesByTagId((prev) => {
+      const next = { ...prev };
+      delete next[tagId];
+      return next;
+    });
+  };
+
+  /**
    * While we're redirecting to login (user is null but we haven't left the
    * page yet), we return null so we don't briefly flash the dashboard
    * content. The first effect will call router.replace and then we'll unmount.
@@ -218,6 +248,12 @@ export default function DashboardPage() {
           )}
         </form>
 
+        {removeError && (
+          <p className="mb-4 text-sm text-red-400 bg-red-950/40 border border-red-900 rounded-lg px-3 py-2">
+            {removeError}
+          </p>
+        )}
+
         {loading ? (
           <p className="text-base text-slate-400">Loading your tags…</p>
         ) : tags.length === 0 ? (
@@ -246,7 +282,7 @@ export default function DashboardPage() {
                         {tag.id.slice(0, 8)}…
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
                       <a
                         href={`/f/${tag.id}`}
                         target="_blank"
@@ -261,6 +297,14 @@ export default function DashboardPage() {
                         className="text-sm text-slate-300 hover:text-slate-50 border border-slate-600 rounded-lg px-3 py-2.5 min-h-[44px] touch-manipulation"
                       >
                         {showQR ? "Hide QR" : "Show QR"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveTag(tag.id)}
+                        disabled={removingTagId === tag.id}
+                        className="text-sm text-red-400 hover:text-red-300 border border-red-900/60 hover:border-red-800 rounded-lg px-3 py-2.5 min-h-[44px] touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {removingTagId === tag.id ? "Removing…" : "Remove"}
                       </button>
                     </div>
                   </div>
