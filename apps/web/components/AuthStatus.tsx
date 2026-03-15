@@ -111,7 +111,7 @@ export function AuthStatus() {
                 className="text-slate-500 text-sm truncate max-w-[120px] sm:max-w-[200px]"
                 title={user.email ?? undefined}
               >
-                {user.email}
+                {(user.user_metadata?.display_name as string) || user.email}
               </span>
               <button
                 type="button"

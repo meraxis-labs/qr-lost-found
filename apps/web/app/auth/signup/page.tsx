@@ -15,7 +15,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { supabase } from "../../../lib/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -24,6 +24,8 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendSent, setResendSent] = useState(false);
 
   /**
    * handleSubmit: call supabase.auth.signUp(). We clear previous error and
@@ -76,6 +78,23 @@ export default function SignupPage() {
     }
 
     setMessage("Signup request sent. You can try logging in now.");
+  };
+
+  const handleResendVerification = async () => {
+    if (!email) return;
+    setResendLoading(true);
+    setResendSent(false);
+    const { error } = await supabase.auth.resend({ email, type: "signup" });
+    setResendLoading(false);
+    if (!error) setResendSent(true);
+  };
+
+  const showConfirmMessage = message?.includes("check your email");
+
+  const redirectTo = typeof window !== "undefined" ? `${window.location.origin}/auth/callback` : "";
+  const handleSocialSignup = async (provider: "google" | "github") => {
+    if (!redirectTo) return;
+    await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } });
   };
 
   return (
@@ -150,9 +169,19 @@ export default function SignupPage() {
             )}
 
             {message && !error && (
-              <p className="text-sm text-emerald-300 bg-emerald-950/40 border border-emerald-900 rounded-lg px-3 py-2">
-                {message}
-              </p>
+              <div className="text-sm text-emerald-300 bg-emerald-950/40 border border-emerald-900 rounded-lg px-3 py-2 space-y-2">
+                <p>{message}</p>
+                {showConfirmMessage && (
+                  <button
+                    type="button"
+                    onClick={handleResendVerification}
+                    disabled={resendLoading}
+                    className="text-sky-300 hover:text-sky-200 underline disabled:opacity-50"
+                  >
+                    {resendLoading ? "Sending…" : resendSent ? "Sent! Check your inbox." : "Resend verification email"}
+                  </button>
+                )}
+              </div>
             )}
 
             <button
@@ -162,6 +191,24 @@ export default function SignupPage() {
             >
               {loading ? "Signing up…" : "Sign up"}
             </button>
+
+            <p className="text-center text-slate-500 text-sm mt-4">or continue with</p>
+            <div className="flex gap-3 mt-2">
+              <button
+                type="button"
+                onClick={() => handleSocialSignup("google")}
+                className="flex-1 rounded-lg border border-slate-600 py-2.5 text-sm text-slate-300 hover:bg-slate-800 transition"
+              >
+                Google
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSocialSignup("github")}
+                className="flex-1 rounded-lg border border-slate-600 py-2.5 text-sm text-slate-300 hover:bg-slate-800 transition"
+              >
+                GitHub
+              </button>
+            </div>
           </form>
 
           <p className="mt-5 text-sm text-slate-400">

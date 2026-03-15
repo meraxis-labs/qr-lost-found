@@ -48,8 +48,8 @@ Improves clarity and professionalism; not blocking the core loop.
 |---|------|--------|--------|
 | 10 | **Button styles** | Done | Define `.btn`, `.btn-primary`, `.btn-outline` in `globals.css` (or Tailwind @layer) so landing and auth buttons look intentional. |
 | 11 | **Sticker export (optional)** | Partial | Print-friendly view or “Download sticker” (e.g. QR + short instructions) so users can print and stick. Download PNG exists; full print sheet / PDF not yet. |
-| 12 | **Auth middleware** | — | Optional `middleware.ts` to redirect unauthenticated users from `/dashboard` to `/auth/login`. Cleaner than per-page checks. |
-| 13 | **`clean` script in web app** | — | Add `"clean": "rm -rf .next"` (or equivalent) in `apps/web/package.json` so `turbo run clean` works. |
+| 12 | **Auth middleware** | Done | Optional `middleware.ts` to redirect unauthenticated users from `/dashboard` to `/auth/login`. Cleaner than per-page checks. |
+| 13 | **`clean` script in web app** | Done | Add `"clean": "rm -rf .next"` (or equivalent) in `apps/web/package.json` so `turbo run clean` works. |
 
 ---
 
@@ -85,11 +85,11 @@ Candidate improvements beyond the current MVP. **Done** = already implemented; *
 
 | Status | Item |
 |--------|------|
-| — | Password reset — "Forgot password?" flow and email reset link (Supabase supports it). |
-| — | Social login — Google / Apple / GitHub via Supabase Auth. |
-| — | Profile / settings page — change email, password, delete account. |
-| — | Email verification — clearer "Confirm your email" state and resend verification. |
-| — | Optional display name — show in dashboard (e.g. "Hi, Alex") instead of only email. |
+| Done | Password reset — "Forgot password?" flow and email reset link (Supabase supports it). |
+| Done | Social login — Google / Apple / GitHub via Supabase Auth. |
+| Done | Profile / settings page — change email, password, delete account. |
+| Done | Email verification — clearer "Confirm your email" state and resend verification. |
+| Done | Optional display name — show in dashboard (e.g. "Hi, Alex") instead of only email. |
 
 ### Dashboard & tags
 
