@@ -287,9 +287,9 @@ export default function DashboardPage() {
                         href={`/f/${tag.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-sky-400 hover:text-sky-300 py-2 px-3 min-h-[44px] inline-flex items-center touch-manipulation"
+                        className="text-sm text-slate-300 hover:text-slate-50 border border-slate-600 rounded-lg px-3 py-2.5 min-h-[44px] inline-flex items-center touch-manipulation"
                       >
-                        Finder link →
+                        Preview
                       </a>
                       <button
                         type="button"
