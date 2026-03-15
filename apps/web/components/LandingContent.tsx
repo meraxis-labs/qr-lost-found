@@ -229,13 +229,14 @@ export function LandingContent() {
       </section>
 
       {/* Use cases */}
-      <section className="border-t border-slate-800 bg-slate-900/40 px-4 sm:px-6 py-16 sm:py-20">
+      <section className="border-t border-slate-800 px-4 sm:px-6 py-16 sm:py-20">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-100 mb-4">
             Tag what matters
           </h2>
-          <p className="text-slate-400 mb-10">
-            Put a QR on anything you might lose—finders can reach you without ever seeing your contact details.
+          <p className="text-slate-400 text-base sm:text-lg mb-10 max-w-xl mx-auto">
+            Put a QR on anything you might lose—finders can reach you without ever
+            seeing your contact details.
           </p>
           <ul className="flex flex-wrap justify-center gap-3">
             {USE_CASES.map((label) => (
