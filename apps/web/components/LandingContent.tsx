@@ -195,19 +195,23 @@ export function LandingContent() {
       </section>
 
       {/* Final CTA */}
-      <section className="border-t border-slate-800 px-4 sm:px-6 py-12 sm:py-16">
-        <div className="max-w-xl mx-auto text-center space-y-4">
-          <h2 className="text-xl font-semibold text-slate-100">Ready to get your stuff back?</h2>
-          <GetStartedLink />
-          <p className="text-slate-500 text-sm">
-            Already have an account?{" "}
-            <a
-              href="/auth/login"
-              className="text-sky-400 hover:text-sky-300 underline-offset-2 hover:underline"
-            >
-              Log in
-            </a>
-          </p>
+      <section className="border-t border-slate-800 px-4 sm:px-6 py-8 sm:py-10">
+        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-slate-100 text-center sm:text-left">
+            Ready to get your stuff back?
+          </h2>
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+            <GetStartedLink />
+            <span className="text-slate-500 text-sm">
+              or{" "}
+              <a
+                href="/auth/login"
+                className="text-sky-400 hover:text-sky-300 underline-offset-2 hover:underline"
+              >
+                Log in
+              </a>
+            </span>
+          </div>
         </div>
       </section>
     </main>
