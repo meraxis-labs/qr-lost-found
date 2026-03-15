@@ -57,6 +57,12 @@ export default function SignupPage() {
       return;
     }
 
+    // Supabase returns success for existing emails but with empty identities (no new user created).
+    if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      setError("An account with this email already exists. Please log in instead.");
+      return;
+    }
+
     if (data.user && !data.session) {
       setMessage(
         "Signup successful. Please check your email to confirm your account before logging in."
