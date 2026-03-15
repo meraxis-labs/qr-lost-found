@@ -89,7 +89,7 @@ export function AuthStatus() {
     >
       <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between gap-3">
         <Link
-          href="/"
+          href={user ? "/dashboard" : "/"}
           className="text-slate-300 hover:text-slate-50 text-sm font-medium transition-colors truncate min-w-0"
         >
           Tagback
