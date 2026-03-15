@@ -279,12 +279,12 @@ export default function DashboardPage() {
                   key={tag.id}
                   className="rounded-xl border border-slate-800 bg-slate-900/40 p-4 sm:p-5"
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex flex-col gap-3">
                     <div className="min-w-0 flex items-center gap-3">
                       <span className="text-2xl shrink-0" aria-hidden>
                         {getTagIconEmoji(tag.icon)}
                       </span>
-                      <div>
+                      <div className="min-w-0">
                         <span className="font-medium text-slate-200 text-base block truncate">
                           {tag.label || "Unnamed tag"}
                         </span>
@@ -293,10 +293,10 @@ export default function DashboardPage() {
                         </span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
+                    <div className="grid grid-cols-3 gap-2 w-full">
                       <Link
                         href={`/dashboard/tag/${tag.id}`}
-                        className="text-sm text-slate-300 hover:text-slate-50 border border-slate-600 rounded-lg px-3 py-2.5 min-h-[44px] inline-flex items-center touch-manipulation"
+                        className="text-sm text-slate-300 hover:text-slate-50 border border-slate-600 rounded-lg px-3 py-2.5 min-h-[44px] inline-flex items-center justify-center touch-manipulation text-center"
                       >
                         Edit
                       </Link>
