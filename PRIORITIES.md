@@ -172,9 +172,9 @@ Candidate improvements beyond the current MVP. **Done** = already implemented; *
 
 | Status | Item |
 |--------|------|
-| — | Privacy policy & Terms of Service — pages + links in footer and signup. |
-| — | FAQ / Help — "How it works", "Is it really anonymous?", "How do I print?". |
-| — | Contact / support — simple form or email for support. |
+| Done | Privacy policy & Terms of Service — pages + links in footer and signup. |
+| Done | FAQ / Help — "How it works", "Is it really anonymous?", "How do I print?". |
+| Done | Contact / support — simple form or email for support. |
 
 ### Discovery & growth
 

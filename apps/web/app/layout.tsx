@@ -16,6 +16,7 @@
 import "./globals.css";
 import type { ReactNode } from "react";
 import { AuthStatus } from "@/components/AuthStatus";
+import { Footer } from "@/components/Footer";
 
 // Shown in the browser tab and in search engine snippets.
 export const metadata = {
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="min-h-[100dvh] flex flex-col bg-slate-950 text-slate-50 antialiased">
         <AuthStatus />
         <div className="flex-1 flex flex-col min-h-0">{children}</div>
+        <Footer />
       </body>
     </html>
   );
