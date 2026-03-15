@@ -73,7 +73,7 @@ export default function SignupPage() {
     }
 
     if (data.session) {
-      router.push("/dashboard");
+      window.location.href = "/dashboard";
       return;
     }
 

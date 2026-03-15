@@ -62,7 +62,10 @@ function LoginForm() {
       return;
     }
 
-    router.push(next.startsWith("/") ? next : "/dashboard");
+    // Full page redirect so the session cookie is sent on the next request.
+    // router.push() can run before the cookie is persisted, so middleware may not see the session.
+    const target = next.startsWith("/") ? next : "/dashboard";
+    window.location.href = target;
   };
 
   const handleResendVerification = async () => {
