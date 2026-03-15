@@ -2,7 +2,7 @@
  * CUSTOMIZE FINDER PAGE — Route: /dashboard/tag/[tagId]
  * ------------------------------------------------------
  * Owner-only. Lets the owner set a custom title and message shown to finders
- * on /f/[tagId]. Save updates the tag; "Preview" opens the finder page in a new tab.
+ * on /f/[tagId]. Save updates the tag; "Preview finder page" opens the owner-only preview (no message form).
  */
 
 "use client";
@@ -189,14 +189,12 @@ export default function CustomizeFinderPage() {
             >
               {saving ? "Saving…" : "Save"}
             </button>
-            <a
-              href={`/f/${tagId}`}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href={`/dashboard/tag/${tagId}/preview`}
               className="rounded-lg text-slate-300 hover:text-slate-50 border border-slate-600 px-5 py-3 min-h-[48px] inline-flex items-center touch-manipulation"
             >
               Preview finder page
-            </a>
+            </Link>
           </div>
         </form>
       </div>
