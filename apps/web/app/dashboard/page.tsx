@@ -214,14 +214,8 @@ export default function DashboardPage() {
   return (
     <main className="flex-1 flex flex-col min-h-0 px-4 py-6 sm:py-8 pb-[env(safe-area-inset-bottom)]">
       <div className="max-w-2xl w-full mx-auto">
-        <div className="flex items-center justify-between gap-3 mb-6">
+        <div className="mb-6">
           <h1 className="text-xl sm:text-2xl font-semibold text-slate-50">My tags</h1>
-          <Link
-            href="/"
-            className="text-sm text-slate-300 hover:text-slate-50 border border-slate-700 rounded-full px-4 py-2.5 min-h-[44px] inline-flex items-center touch-manipulation"
-          >
-            ← Home
-          </Link>
         </div>
 
         <form
