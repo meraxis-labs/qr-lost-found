@@ -14,6 +14,7 @@ export const TAG_ICONS = [
   { id: "watch", emoji: "⌚", label: "Watch" },
   { id: "briefcase", emoji: "💼", label: "Briefcase" },
   { id: "headphones", emoji: "🎧", label: "Headphones" },
+  { id: "pet", emoji: "🐕", label: "Pet" },
 ] as const;
 
 export const DEFAULT_TAG_ICON_ID = TAG_ICONS[0].id;

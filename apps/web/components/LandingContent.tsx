@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { GetStartedLink } from "./GetStartedLink";
+import { getTagIconEmoji } from "@/lib/tagIcons";
 
 const HOW_IT_WORKS = [
   { step: 1, title: "Create a tag", description: "Name your item, get a unique QR." },
@@ -27,13 +28,13 @@ const FEATURES = [
   { title: "One dashboard", description: "All tags and messages in one place." },
 ];
 
-const USE_CASES = [
-  "Keys & keychains",
-  "Wallets & cards",
-  "Backpacks & bags",
-  "Luggage & cases",
-  "Phones & devices",
-  "Pet collars",
+const USE_CASES: { label: string; iconId: string }[] = [
+  { label: "Keys & keychains", iconId: "keys" },
+  { label: "Wallets & cards", iconId: "wallet" },
+  { label: "Backpacks & bags", iconId: "bag" },
+  { label: "Luggage & cases", iconId: "briefcase" },
+  { label: "Phones & devices", iconId: "phone" },
+  { label: "Pet collars", iconId: "pet" },
 ];
 
 export function LandingContent() {
@@ -169,12 +170,22 @@ export function LandingContent() {
 
       {/* Use cases */}
       <section className="border-t border-slate-800 bg-slate-900/40 px-4 sm:px-6 py-10 sm:py-14">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-lg font-semibold text-slate-100 mb-4">Tag what matters</h2>
-          <ul className="flex flex-wrap justify-center gap-2 sm:gap-3">
-            {USE_CASES.map((label) => (
-              <li key={label}>
-                <span className="inline-block px-3 py-1.5 rounded-full bg-slate-800 text-slate-300 text-sm border border-slate-700">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-lg font-semibold text-slate-100 mb-8">Tag what matters</h2>
+          <ul className="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8">
+            {USE_CASES.map(({ label, iconId }) => (
+              <li
+                key={label}
+                className="flex flex-col items-center rounded-xl bg-slate-800/60 border border-slate-700 p-6 sm:p-8"
+              >
+                <span
+                  className="text-5xl sm:text-6xl mb-3 select-none"
+                  aria-hidden
+                  role="img"
+                >
+                  {getTagIconEmoji(iconId)}
+                </span>
+                <span className="text-slate-200 font-medium text-sm sm:text-base">
                   {label}
                 </span>
               </li>
