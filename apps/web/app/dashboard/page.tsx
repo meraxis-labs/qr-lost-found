@@ -282,9 +282,6 @@ export default function DashboardPage() {
                         <span className="font-medium text-slate-200 text-base block truncate">
                           {tag.label || "Unnamed tag"}
                         </span>
-                        <span className="text-sm text-slate-500 font-mono">
-                          {tag.id.slice(0, 8)}…
-                        </span>
                       </div>
                     </div>
                     <div className="grid grid-cols-3 gap-2 w-full">
