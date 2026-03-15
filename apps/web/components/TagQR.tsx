@@ -2,9 +2,8 @@
  * TAG QR — QR code for a tag's finder link
  * -----------------------------------------
  * Used on the dashboard when the user clicks "Show QR" on a tag. We
- * generate a QR code that encodes the finder URL so someone can scan it
- * and open the page where they can send an anonymous message. We also
- * show the URL as text and a "Download PNG" button for printing or sharing.
+ * generate a QR code that encodes the finder URL. "Copy URL" copies the
+ * link to the clipboard; "Download PNG" saves the QR image for printing or sharing.
  */
 
 "use client";
@@ -15,9 +14,9 @@ import QRCode from "qrcode";
 type Props = { tagId: string; label?: string | null };
 
 export function TagQR({ tagId, label }: Props) {
-  // The QR image as a data URL (base64). null until generation finishes.
   const [dataUrl, setDataUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   /**
    * WHY we build the full URL only on the client:
@@ -63,6 +62,19 @@ export function TagQR({ tagId, label }: Props) {
     link.click();
   }, [dataUrl, tagId, label]);
 
+  const handleCopyUrl = useCallback(() => {
+    if (!finderUrl) return;
+    void navigator.clipboard.writeText(finderUrl).then(() => {
+      setCopied(true);
+    });
+  }, [finderUrl]);
+
+  useEffect(() => {
+    if (!copied) return;
+    const t = setTimeout(() => setCopied(false), 2000);
+    return () => clearTimeout(t);
+  }, [copied]);
+
   // Show error state if QR generation failed (e.g. invalid URL or library error).
   if (error) {
     return <p className="text-sm text-red-400">{error}</p>;
@@ -81,14 +93,13 @@ export function TagQR({ tagId, label }: Props) {
         alt={`QR code for ${label ?? "tag"} finder link`}
         className="rounded-lg border border-slate-700 bg-white p-2 max-w-full"
       />
-      <a
-        href={finderUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-sm text-sky-400 hover:text-sky-300 break-all text-center"
+      <button
+        type="button"
+        onClick={handleCopyUrl}
+        className="text-sm text-sky-400 hover:text-sky-300 touch-manipulation"
       >
-        {finderUrl}
-      </a>
+        {copied ? "Copied!" : "Copy URL"}
+      </button>
       <button
         type="button"
         onClick={handleDownload}
