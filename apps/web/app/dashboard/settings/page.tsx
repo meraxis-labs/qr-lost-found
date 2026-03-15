@@ -8,7 +8,7 @@
 
 "use client";
 
-import { FormEvent, useState, useEffect } from "react";
+import { FormEvent, useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
@@ -17,7 +17,7 @@ const inputClass =
   "w-full rounded-lg bg-slate-950 border border-slate-700 px-4 py-3 text-base text-slate-50 placeholder:text-slate-500 outline-none focus:border-sky-500 min-h-[48px] touch-manipulation";
 const labelClass = "block text-sm font-medium text-slate-200 mb-1";
 
-export default function SettingsPage() {
+function SettingsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isPasswordReset = searchParams.get("password_reset") === "1";
@@ -174,5 +174,19 @@ export default function SettingsPage() {
         </p>
       </section>
     </main>
+  );
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+          <p className="text-slate-400">Loading…</p>
+        </main>
+      }
+    >
+      <SettingsContent />
+    </Suspense>
   );
 }
