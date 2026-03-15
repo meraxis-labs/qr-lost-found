@@ -283,14 +283,12 @@ export default function DashboardPage() {
                       </span>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
-                      <a
-                        href={`/f/${tag.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <Link
+                        href={`/dashboard/tag/${tag.id}`}
                         className="text-sm text-slate-300 hover:text-slate-50 border border-slate-600 rounded-lg px-3 py-2.5 min-h-[44px] inline-flex items-center touch-manipulation"
                       >
                         Preview
-                      </a>
+                      </Link>
                       <button
                         type="button"
                         onClick={() => setExpandedQRTagId(showQR ? null : tag.id)}

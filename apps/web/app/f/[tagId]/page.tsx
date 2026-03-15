@@ -26,26 +26,31 @@ export default async function FinderPage({ params }: Props) {
 
   const { data, error } = await supabase
     .from("tags")
-    .select("id, label, is_active")
+    .select("id, label, is_active, finder_title, finder_message")
     .eq("id", tagId)
     .eq("is_active", true)
     .single();
 
-  const row = data as Pick<TagRow, "id" | "label" | "is_active"> | null;
+  const row = data as Pick<TagRow, "id" | "label" | "is_active" | "finder_title" | "finder_message"> | null;
 
   if (error || !row) {
     notFound();
   }
 
+  const title =
+    row.finder_title?.trim() || "You found something?";
+  const message =
+    row.finder_message?.trim() ||
+    "This item has a Tagback tag. Send a short message to the owner anonymously — they'll get it without seeing your contact info.";
+
   return (
     <main className="flex-1 flex flex-col min-h-0 items-center justify-center px-4 py-6 sm:py-8">
       <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-950/60 p-5 sm:p-6 shadow-xl">
         <h1 className="text-xl sm:text-2xl font-semibold text-slate-50 mb-2">
-          You found something?
+          {title}
         </h1>
-        <p className="text-base sm:text-sm text-slate-400 mb-4 leading-relaxed">
-          This item has a Tagback tag. Send a short message to the owner
-          anonymously — they&apos;ll get it without seeing your contact info.
+        <p className="text-base sm:text-sm text-slate-400 mb-4 leading-relaxed whitespace-pre-wrap">
+          {message}
         </p>
         {row.label && (
           <p className="text-sm text-slate-500 mb-4">

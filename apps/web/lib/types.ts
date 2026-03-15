@@ -27,6 +27,8 @@ export interface TagRow {
   label: string | null;
   created_at: string;
   is_active: boolean;
+  finder_title?: string | null;
+  finder_message?: string | null;
 }
 
 /**
@@ -53,6 +55,8 @@ export function tagRowToTag(row: TagRow): Tag {
     label: row.label ?? undefined,
     createdAt: row.created_at,
     isActive: row.is_active,
+    finderTitle: row.finder_title ?? undefined,
+    finderMessage: row.finder_message ?? undefined,
   };
 }
 

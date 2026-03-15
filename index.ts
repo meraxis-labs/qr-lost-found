@@ -15,6 +15,10 @@ export interface Tag {
   label?: string; // e.g. "My Wallet", "Laptop Bag"
   createdAt: string;
   isActive: boolean;
+  /** Custom title shown to finders (e.g. "You found something?"). When empty, app uses default. */
+  finderTitle?: string;
+  /** Custom message shown to finders above the form. When empty, app uses default. */
+  finderMessage?: string;
 }
 
 // Anonymous message sent by a finder when they scan a QR code.
