@@ -26,12 +26,12 @@ export default async function FinderPage({ params }: Props) {
 
   const { data, error } = await supabase
     .from("tags")
-    .select("id, label, is_active, finder_title, finder_message")
+    .select("id, is_active, finder_title, finder_message")
     .eq("id", tagId)
     .eq("is_active", true)
     .single();
 
-  const row = data as Pick<TagRow, "id" | "label" | "is_active" | "finder_title" | "finder_message"> | null;
+  const row = data as Pick<TagRow, "id" | "is_active" | "finder_title" | "finder_message"> | null;
 
   if (error || !row) {
     notFound();
@@ -52,11 +52,6 @@ export default async function FinderPage({ params }: Props) {
         <p className="text-base sm:text-sm text-slate-400 mb-4 leading-relaxed whitespace-pre-wrap">
           {message}
         </p>
-        {row.label && (
-          <p className="text-sm text-slate-500 mb-4">
-            Tag: <span className="text-slate-300">{row.label}</span>
-          </p>
-        )}
         <FinderForm tagId={tagId} />
       </div>
     </main>
