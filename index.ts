@@ -19,6 +19,8 @@ export interface Tag {
   finderTitle?: string;
   /** Custom message shown to finders above the form. When empty, app uses default. */
   finderMessage?: string;
+  /** Icon key for the tag (e.g. "wallet", "keys"). UI maps to emoji or asset. */
+  icon?: string;
 }
 
 // Anonymous message sent by a finder when they scan a QR code.

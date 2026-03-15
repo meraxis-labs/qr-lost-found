@@ -29,6 +29,7 @@ export interface TagRow {
   is_active: boolean;
   finder_title?: string | null;
   finder_message?: string | null;
+  icon?: string | null;
 }
 
 /**
@@ -57,6 +58,7 @@ export function tagRowToTag(row: TagRow): Tag {
     isActive: row.is_active,
     finderTitle: row.finder_title ?? undefined,
     finderMessage: row.finder_message ?? undefined,
+    icon: row.icon ?? undefined,
   };
 }
 

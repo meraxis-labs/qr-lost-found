@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import { IconPicker } from "@/components/IconPicker";
 import type { TagRow } from "@/lib/types";
 import { tagRowToTag } from "@/lib/types";
 import type { Tag } from "@repo/types";
@@ -27,6 +28,8 @@ export default function CustomizeFinderPage() {
   const [user, setUser] = useState<{ id: string } | null>(null);
   const [tag, setTag] = useState<Tag | null>(null);
   const [loading, setLoading] = useState(true);
+  const [tagLabel, setTagLabel] = useState("");
+  const [tagIcon, setTagIcon] = useState<string | null>(null);
   const [finderTitle, setFinderTitle] = useState(DEFAULT_TITLE);
   const [finderMessage, setFinderMessage] = useState(DEFAULT_MESSAGE);
   const [saving, setSaving] = useState(false);
@@ -66,6 +69,8 @@ export default function CustomizeFinderPage() {
       }
       const t = tagRowToTag(data as TagRow);
       setTag(t);
+      setTagLabel(t.label ?? "");
+      setTagIcon(t.icon ?? null);
       setFinderTitle(t.finderTitle?.trim() || DEFAULT_TITLE);
       setFinderMessage(t.finderMessage?.trim() || DEFAULT_MESSAGE);
     }).finally(() => {
@@ -85,6 +90,8 @@ export default function CustomizeFinderPage() {
     const { error } = await supabase
       .from("tags")
       .update({
+        label: tagLabel.trim() || null,
+        icon: tagIcon || null,
         finder_title: finderTitle.trim() || null,
         finder_message: finderMessage.trim() || null,
       } as never)
@@ -100,6 +107,8 @@ export default function CustomizeFinderPage() {
       prev
         ? {
             ...prev,
+            label: tagLabel.trim() || undefined,
+            icon: tagIcon ?? undefined,
             finderTitle: finderTitle.trim() || undefined,
             finderMessage: finderMessage.trim() || undefined,
           }
@@ -135,14 +144,36 @@ export default function CustomizeFinderPage() {
         </div>
 
         <p className="text-slate-400 text-sm mb-4">
-          Set the title and message that finders see when they scan your tag or
-          open the finder link. Leave blank to use the default text.
+          Edit your tag name and icon, and the title and message finders see when
+          they scan your tag or open the finder link.
         </p>
 
         <form
           onSubmit={handleSave}
           className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-5 mb-6 space-y-4"
         >
+          <div>
+            <label
+              htmlFor="tag-label"
+              className="block text-sm font-medium text-slate-200 mb-2"
+            >
+              Tag name
+            </label>
+            <input
+              id="tag-label"
+              type="text"
+              value={tagLabel}
+              onChange={(e) => setTagLabel(e.target.value)}
+              placeholder="e.g. My Wallet, Laptop Bag"
+              className="w-full rounded-lg bg-slate-900 border border-slate-700 px-4 py-3 text-base text-slate-50 placeholder:text-slate-500 outline-none focus:border-sky-500 min-h-[48px]"
+            />
+          </div>
+          <IconPicker value={tagIcon} onChange={setTagIcon} label="Icon" />
+          <div className="border-t border-slate-800 pt-4">
+            <span className="block text-sm font-medium text-slate-400 mb-2">
+              Finder page (what finders see)
+            </span>
+          </div>
           <div>
             <label
               htmlFor="finder-title"

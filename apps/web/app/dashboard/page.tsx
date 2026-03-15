@@ -15,8 +15,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { TagQR } from "@/components/TagQR";
+import { IconPicker } from "@/components/IconPicker";
 import type { Tag, TagRow, Message, MessageRow } from "@/lib/types";
 import { tagRowToTag, messageRowToMessage } from "@/lib/types";
+import { DEFAULT_TAG_ICON_ID, getTagIconEmoji } from "@/lib/tagIcons";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -25,6 +27,7 @@ export default function DashboardPage() {
   const [messagesByTagId, setMessagesByTagId] = useState<Record<string, Message[]>>({});
   const [loading, setLoading] = useState(true);
   const [createLabel, setCreateLabel] = useState("");
+  const [createIcon, setCreateIcon] = useState<string | null>(DEFAULT_TAG_ICON_ID);
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const [expandedQRTagId, setExpandedQRTagId] = useState<string | null>(null);
@@ -153,6 +156,7 @@ export default function DashboardPage() {
         owner_id: user.id,
         label: createLabel.trim() || null,
         is_active: true,
+        icon: createIcon || null,
       } as never)
       .select()
       .single();
@@ -166,6 +170,7 @@ export default function DashboardPage() {
     if (data) {
       setTags((prev) => [tagRowToTag(data as TagRow), ...prev]);
       setCreateLabel("");
+      setCreateIcon(DEFAULT_TAG_ICON_ID);
     }
   };
 
@@ -221,7 +226,7 @@ export default function DashboardPage() {
 
         <form
           onSubmit={handleCreateTag}
-          className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-5 mb-6"
+          className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-5 mb-6 space-y-4"
         >
           <label htmlFor="tag-label" className="block text-base sm:text-sm font-medium text-slate-200 mb-2">
             Create a new tag
@@ -243,6 +248,7 @@ export default function DashboardPage() {
               {creating ? "Adding…" : "Add tag"}
             </button>
           </div>
+          <IconPicker value={createIcon} onChange={setCreateIcon} />
           {createError && (
             <p className="mt-2 text-sm text-red-400">{createError}</p>
           )}
@@ -274,20 +280,25 @@ export default function DashboardPage() {
                   className="rounded-xl border border-slate-800 bg-slate-900/40 p-4 sm:p-5"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <div className="min-w-0">
-                      <span className="font-medium text-slate-200 text-base block truncate">
-                        {tag.label || "Unnamed tag"}
+                    <div className="min-w-0 flex items-center gap-3">
+                      <span className="text-2xl shrink-0" aria-hidden>
+                        {getTagIconEmoji(tag.icon)}
                       </span>
-                      <span className="text-sm text-slate-500 font-mono">
-                        {tag.id.slice(0, 8)}…
-                      </span>
+                      <div>
+                        <span className="font-medium text-slate-200 text-base block truncate">
+                          {tag.label || "Unnamed tag"}
+                        </span>
+                        <span className="text-sm text-slate-500 font-mono">
+                          {tag.id.slice(0, 8)}…
+                        </span>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
                       <Link
                         href={`/dashboard/tag/${tag.id}`}
                         className="text-sm text-slate-300 hover:text-slate-50 border border-slate-600 rounded-lg px-3 py-2.5 min-h-[44px] inline-flex items-center touch-manipulation"
                       >
-                        Preview
+                        Edit
                       </Link>
                       <button
                         type="button"
