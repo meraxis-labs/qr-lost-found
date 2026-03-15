@@ -42,7 +42,14 @@ export default function LoginPage() {
     setLoading(false);
 
     if (error) {
-      setError(error.message);
+      const isInvalidCredentials =
+        error.message?.toLowerCase().includes("invalid login") ||
+        error.message?.toLowerCase().includes("invalid credentials");
+      if (isInvalidCredentials) {
+        setError("Invalid email or password. Don't have an account? Sign up first.");
+      } else {
+        setError(error.message);
+      }
       return;
     }
 
@@ -108,9 +115,16 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <p className="text-sm text-red-400 bg-red-950/40 border border-red-900 rounded-lg px-3 py-2">
-                {error}
-              </p>
+              <div className="text-sm bg-red-950/40 border border-red-900 rounded-lg px-3 py-2 space-y-1">
+                <p className="text-red-400">{error}</p>
+                {error.includes("Sign up first") && (
+                  <p>
+                    <Link href="/auth/signup" className="text-sky-400 hover:text-sky-300 underline-offset-2 hover:underline">
+                      Sign up
+                    </Link>
+                  </p>
+                )}
+              </div>
             )}
 
             <button
