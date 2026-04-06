@@ -67,13 +67,23 @@ Explicitly after MVP; order can change.
 
 ---
 
-## Suggested first 3 steps
+## Backlog tackle order
 
-1. ~~**Define Supabase schema** (P0)~~ — Done.
-2. ~~**Dashboard + tag CRUD** (P1)~~ — Done.
-3. ~~**Finder page + send message** (P1)~~ — Done.
+Historical milestones: ~~P0 schema~~, ~~P1 dashboard + finder~~, ~~P2 QR + messages + CTAs~~ are **Done**. P3 is mostly **Done**; **sticker export** remains **Partial** (PNG exists; print sheet / PDF not yet). Use the **phases below** to sequence work in [Feature upgrades](#feature-upgrades-backlog), P3 print/PDF, P4, and fixes tracked in `CODE_REVIEW.md`.
 
-Next: finish P3 (auth middleware, clean script, full sticker/print export), then P4 and feature upgrades below.
+| Phase | Focus | What to ship (order within phase matters) |
+|-------|--------|-------------------------------------------|
+| **0 — Foundation** | Correctness, abuse, technical debt | Items in `CODE_REVIEW.md`: server vs browser Supabase on public pages, fix `as never` / types, middleware + env fail-safe, no silent load failures. Finder: **character limit + counter**, **rate limiting** and optional **CAPTCHA**, optional move message submit to **Server Action or API**. |
+| **1 — Trust & clarity** | Feedback on failure/success | **Toast** notifications; **retry / refresh** and visible errors when tag/message loads fail; **error boundaries**. |
+| **2 — Dashboard power** | Owner workflows | **Edit tag label**; **activate / deactivate** tag. **Sort** and **search/filter** tags; **pagination** when lists get long. **Unread badge** (header or dashboard). |
+| **3 — Messages** | Real-time and notifications | **Supabase Realtime** for new messages; then **email** and later **push** (needs **API routes / webhooks**). Then **mark unread**, **delete message**, **export** — prioritize by user demand. **Reply to finder** when ready for a larger flow. |
+| **4 — Finder richness** | Optional finder fields | **Custom thank-you** after submit. **Optional location** and **photo upload** after abuse controls feel solid. **Localization** when target markets are clear. |
+| **5 — QR & print** | Finish P3 sticker work | **SVG or high-res PNG** → **print-ready PDF** → **batch PDF**. Then **short URL** (infra) and **optional logo in QR** if needed. |
+| **6 — Polish & reach** | UX and growth | **Loading skeletons**, **empty-state illustrations**, **accessibility**, **theme**, **onboarding tour**, **PWA** as needed. **Privacy-safe analytics**; **public stats** on landing. |
+| **7 — Business & platform** | Monetization & clients | **Free tier limits** → **Premium**. Introduce **`packages/shared`** when a second client or duplicated logic justifies it. **Mobile app (`apps/mobile`)** with **push**. **Physical sticker store** after premium/ops are clear. |
+| **8 — Later** | Sweep | **Bulk actions**, **README clone URL**, full **i18n** across the app. |
+
+**P4 — Later / Non-MVP** maps mainly to phases **7–8** (shared package, mobile, premium, sticker store, README).
 
 ---
 
@@ -102,7 +112,7 @@ Candidate improvements beyond the current MVP. **Done** = already implemented; *
 | — | Pagination or infinite scroll — for users with many tags. |
 | Done | Tag stats on card — e.g. "3 messages", "Last message 2 days ago" (message count shown). |
 | — | Bulk actions — select multiple tags to deactivate or export. |
-| — | Custom finder message per tag — owner-defined text on finder page (e.g. "Thanks for finding my wallet…"). |
+| Done | Custom finder message per tag — owner-defined title/message on finder page (`/dashboard/tag/[tagId]`). |
 
 ### Messages
 
