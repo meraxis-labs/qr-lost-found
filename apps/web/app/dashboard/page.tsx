@@ -25,6 +25,7 @@ import type {
 } from "@/lib/types";
 import { tagRowToTag, messageRowToMessage } from "@/lib/types";
 import { DEFAULT_TAG_ICON_ID, getTagIconEmoji } from "@/lib/tagIcons";
+import { toast } from "sonner";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -187,7 +188,10 @@ export default function DashboardPage() {
       (t) => (t.label ?? "").trim().toLowerCase() === trimmedLabel.toLowerCase()
     );
     if (nameExists) {
-      setCreateError("A tag with this name already exists. Please choose a different name.");
+      const msg =
+        "A tag with this name already exists. Please choose a different name.";
+      setCreateError(msg);
+      toast.error(msg);
       return;
     }
 
@@ -208,12 +212,14 @@ export default function DashboardPage() {
 
     if (error) {
       setCreateError(error.message);
+      toast.error(error.message);
       return;
     }
     if (data) {
       setTags((prev) => [tagRowToTag(data as TagRow), ...prev]);
       setCreateLabel("");
       setCreateIcon(DEFAULT_TAG_ICON_ID);
+      toast.success("Tag added");
     }
   };
 
@@ -235,8 +241,10 @@ export default function DashboardPage() {
     setRemovingTagId(null);
     if (error) {
       setRemoveError(error.message);
+      toast.error(error.message);
       return;
     }
+    toast.success("Tag removed");
     setTags((prev) => prev.filter((t) => t.id !== tagId));
     setMessagesByTagId((prev) => {
       const next = { ...prev };

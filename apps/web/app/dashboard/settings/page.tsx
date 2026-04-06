@@ -12,6 +12,7 @@ import { FormEvent, useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import { toast } from "sonner";
 
 const inputClass =
   "w-full rounded-lg bg-slate-950 border border-slate-700 px-4 py-3 text-base text-slate-50 placeholder:text-slate-500 outline-none focus:border-sky-500 min-h-[48px] touch-manipulation";
@@ -72,11 +73,15 @@ function SettingsContent() {
     setPasswordSuccess(false);
 
     if (newPassword.length < 6) {
-      setPasswordError("Password must be at least 6 characters.");
+      const msg = "Password must be at least 6 characters.";
+      setPasswordError(msg);
+      toast.error(msg);
       return;
     }
     if (newPassword !== confirmPassword) {
-      setPasswordError("Passwords don't match.");
+      const msg = "Passwords don't match.";
+      setPasswordError(msg);
+      toast.error(msg);
       return;
     }
 
@@ -86,10 +91,12 @@ function SettingsContent() {
 
     if (error) {
       setPasswordError(error.message);
+      toast.error(error.message);
       return;
     }
 
     setPasswordSuccess(true);
+    toast.success("Password updated");
     setNewPassword("");
     setConfirmPassword("");
   };
@@ -103,7 +110,12 @@ function SettingsContent() {
       data: { display_name: displayName.trim() || null },
     });
     setDisplayNameLoading(false);
-    if (!error) setDisplayNameSuccess(true);
+    if (!error) {
+      setDisplayNameSuccess(true);
+      toast.success("Display name saved");
+    } else {
+      toast.error(error.message);
+    }
   };
 
   const handleChangeEmail = async (e: FormEvent) => {
@@ -116,9 +128,11 @@ function SettingsContent() {
     setEmailLoading(false);
     if (error) {
       setEmailError(error.message);
+      toast.error(error.message);
       return;
     }
     setEmailSuccess(true);
+    toast.success("Check your new inbox to confirm the email change");
     setUser((u) => (u ? { ...u, email: newEmail.trim() } : null));
     setNewEmail("");
   };
@@ -132,14 +146,21 @@ function SettingsContent() {
       const auth = supabase.auth as { deleteUser?: () => Promise<{ error: { message?: string } | null }> };
       const result = auth.deleteUser ? await auth.deleteUser() : { error: { message: "Not available" } };
       if (result?.error) {
-        setDeleteError(result.error.message || "Account deletion is not available. Email support to request deletion.");
+        const msg =
+          result.error.message ||
+          "Account deletion is not available. Email support to request deletion.";
+        setDeleteError(msg);
+        toast.error(msg);
         setDeleteLoading(false);
         return;
       }
       await supabase.auth.signOut();
       window.location.href = "/";
     } catch {
-      setDeleteError("Account deletion is not available. Email support to request deletion.");
+      const msg =
+        "Account deletion is not available. Email support to request deletion.";
+      setDeleteError(msg);
+      toast.error(msg);
     }
     setDeleteLoading(false);
   };

@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabaseClient";
+import { toast } from "sonner";
 
 export function AuthStatus() {
   const router = useRouter();
@@ -78,8 +79,12 @@ export function AuthStatus() {
   const handleLogout = async () => {
     setError(null);
     const { error: err } = await supabase.auth.signOut();
-    if (err) setError(err.message);
-    else router.push("/");
+    if (err) {
+      setError(err.message);
+      toast.error(err.message);
+    } else {
+      router.push("/");
+    }
   };
 
   return (

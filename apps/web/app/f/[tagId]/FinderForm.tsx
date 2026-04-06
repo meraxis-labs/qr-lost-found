@@ -10,6 +10,7 @@ import { FormEvent, useState } from "react";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { submitFinderMessage } from "@/app/f/[tagId]/actions";
 import { FINDER_MESSAGE_MAX_LENGTH } from "@/lib/finderLimits";
+import { toast } from "sonner";
 
 type Props = { tagId: string };
 
@@ -51,8 +52,10 @@ export function FinderForm({ tagId }: Props) {
 
     if (!result.ok) {
       setError(result.error);
+      toast.error(result.error);
       return;
     }
+    toast.success("Message sent");
     setSent(true);
     setContent("");
     setTurnstileToken(null);

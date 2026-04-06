@@ -152,7 +152,7 @@ Candidate improvements beyond the current MVP. **Done** = already implemented; *
 
 | Status | Item |
 |--------|------|
-| — | Toast notifications — success/error toasts for "Tag created", "Message sent", "Link copied". |
+| Done | Toast notifications — Sonner toasts for tag add/remove, finder send, QR copy/download, customize save, settings, logout errors (`AppToaster` in root layout). |
 | — | Loading skeletons — skeleton cards/lists instead of "Loading your tags…". |
 | — | Empty-state illustrations — for "No tags yet", "No messages". |
 | — | Theme toggle — dark (current) / light mode with persistence. |
@@ -164,8 +164,8 @@ Candidate improvements beyond the current MVP. **Done** = already implemented; *
 
 | Status | Item |
 |--------|------|
-| — | Rate limiting — on finder form submit (and optionally auth) to prevent spam. |
-| — | Error boundaries — React error boundaries and fallback UI. |
+| Done | Rate limiting — in-memory limit on finder Server Action (`FINDER_RATE_LIMIT_*` env). |
+| Done | Error boundaries — `app/error.tsx` (route) and `app/global-error.tsx` (root) with retry + home link. |
 | — | Retry / refresh — "Retry" or "Refresh" on failed tag/message loads. |
 | — | API routes — Next.js API routes for webhooks (e.g. "new message" → send email) or server-only logic. |
 | — | Privacy-safe analytics — e.g. finder page view count per tag (no PII). |

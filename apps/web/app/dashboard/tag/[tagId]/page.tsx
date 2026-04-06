@@ -15,6 +15,7 @@ import { IconPicker } from "@/components/IconPicker";
 import type { TagRow, DbTagUpdate } from "@/lib/types";
 import { tagRowToTag } from "@/lib/types";
 import type { Tag } from "@repo/types";
+import { toast } from "sonner";
 
 const DEFAULT_TITLE = "You found something?";
 const DEFAULT_MESSAGE =
@@ -98,7 +99,10 @@ export default function CustomizeFinderPage() {
       (t) => t.id !== tagId && (t.label ?? "").trim().toLowerCase() === trimmedLabel.toLowerCase()
     );
     if (nameExists) {
-      setSaveError("A tag with this name already exists. Please choose a different name.");
+      const msg =
+        "A tag with this name already exists. Please choose a different name.";
+      setSaveError(msg);
+      toast.error(msg);
       return;
     }
 
@@ -117,9 +121,11 @@ export default function CustomizeFinderPage() {
     setSaving(false);
     if (error) {
       setSaveError(error.message);
+      toast.error(error.message);
       return;
     }
     setSaveSuccess(true);
+    toast.success("Saved");
     setTag((prev) =>
       prev
         ? {
