@@ -14,6 +14,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabaseClient";
+import {
+  fetchUnreadMessageCount,
+  UNREAD_CHANGED_EVENT,
+} from "../lib/unreadMessages";
 import { toast } from "sonner";
 
 export function AuthStatus() {
@@ -21,6 +25,7 @@ export function AuthStatus() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [unreadCount, setUnreadCount] = useState<number | null>(null);
 
   /**
    * On mount we do two things:
@@ -62,6 +67,7 @@ export function AuthStatus() {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!isMounted) return;
       setUser(session?.user ?? null);
+      if (!session?.user) setUnreadCount(null);
     });
 
     // Cleanup: unsubscribe when the component unmounts so we don't leak listeners.
@@ -70,6 +76,23 @@ export function AuthStatus() {
       subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    const load = () => {
+      void fetchUnreadMessageCount(supabase, user.id).then((n) => {
+        if (!cancelled) setUnreadCount(n);
+      });
+    };
+    load();
+    const onUnreadChanged = () => load();
+    window.addEventListener(UNREAD_CHANGED_EVENT, onUnreadChanged);
+    return () => {
+      cancelled = true;
+      window.removeEventListener(UNREAD_CHANGED_EVENT, onUnreadChanged);
+    };
+  }, [user]);
 
   /**
    * handleLogout: sign out via Supabase and redirect to home. We clear any
@@ -95,9 +118,17 @@ export function AuthStatus() {
       <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between gap-3">
         <Link
           href={user ? "/dashboard" : "/"}
-          className="text-slate-300 hover:text-slate-50 text-sm font-medium transition-colors truncate min-w-0"
+          className="inline-flex items-center gap-2 text-slate-300 hover:text-slate-50 text-sm font-medium transition-colors truncate min-w-0"
         >
-          Tagback
+          <span>Tagback</span>
+          {user && unreadCount !== null && unreadCount > 0 && (
+            <span
+              className="shrink-0 min-w-[1.25rem] h-5 px-1.5 rounded-full bg-sky-600 text-slate-50 text-xs font-semibold inline-flex items-center justify-center"
+              aria-label={`${unreadCount} unread messages`}
+            >
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </span>
+          )}
         </Link>
         <nav className="flex items-center gap-3 sm:gap-4 shrink-0 min-w-0">
           {loading ? (
