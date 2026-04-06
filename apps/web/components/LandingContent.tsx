@@ -16,16 +16,57 @@ import { GetStartedLink } from "./GetStartedLink";
 import { getTagIconEmoji } from "@/lib/tagIcons";
 
 const HOW_IT_WORKS = [
-  { step: 1, title: "Create a tag", description: "Name your item, get a unique QR." },
-  { step: 2, title: "Stick the QR", description: "Print or show it—finders scan with their camera." },
-  { step: 3, title: "They message you", description: "No app or account. Your contact stays hidden." },
-  { step: 4, title: "Reply in dashboard", description: "Messages land here. You choose when to share details." },
+  {
+    step: 1,
+    title: "Create a tag in minutes",
+    description:
+      "Give your item a name, choose an icon, and we instantly generate a smart QR for it.",
+  },
+  {
+    step: 2,
+    title: "Print or stick the QR",
+    description:
+      "Download, print, or add it to a label. Stick it on keys, bags, wallets, devices, or pet collars.",
+  },
+  {
+    step: 3,
+    title: "Finder scans & sends a message",
+    description:
+      "Anyone can scan with their phone camera, type a short message, and hit send. No app, no login needed.",
+  },
+  {
+    step: 4,
+    title: "You reply safely from your dashboard",
+    description:
+      "You receive a private message linked to that item and decide if/when to share your contact details.",
+  },
 ];
 
 const FEATURES = [
-  { title: "Private", description: "Finders never see your number or email unless you reply." },
-  { title: "Simple for finders", description: "Scan, type, send—no signup." },
-  { title: "One dashboard", description: "All tags and messages in one place." },
+  {
+    title: "Privacy-first by default",
+    description: "Finders never see your number or email unless you choose to share it.",
+  },
+  {
+    title: "Zero-friction for finders",
+    description: "Scan, type, send—no app download, no accounts, no instructions needed.",
+  },
+  {
+    title: "Everything in one place",
+    description: "Manage all your tagged items and conversations from a single dashboard.",
+  },
+  {
+    title: "Works anywhere a QR works",
+    description: "Print at home, use label printers, or add to existing stickers and cards.",
+  },
+  {
+    title: "Designed for real-world loss",
+    description: "Short, clear flows so stressed finders can contact you in seconds.",
+  },
+  {
+    title: "Built on Supabase",
+    description: "Modern, secure stack with authentication and storage you can trust.",
+  },
 ];
 
 const USE_CASES: { label: string; iconId: string }[] = [
@@ -35,6 +76,25 @@ const USE_CASES: { label: string; iconId: string }[] = [
   { label: "Luggage & cases", iconId: "briefcase" },
   { label: "Phones & devices", iconId: "phone" },
   { label: "Pet collars", iconId: "pet" },
+];
+
+const FAQ_ITEMS = [
+  {
+    q: "Does the finder need an app or account?",
+    a: "No. They just scan the QR with their phone camera and type a message in their browser.",
+  },
+  {
+    q: "Can people see my phone number or email?",
+    a: "Not unless you decide to share it in a reply. By default we only show your item name and message form.",
+  },
+  {
+    q: "What happens if I lose multiple things?",
+    a: "Create one tag per item—each QR is unique so messages are automatically linked to the right thing.",
+  },
+  {
+    q: "Can I change or disable a tag later?",
+    a: "Yes. You can update item details or archive tags from your dashboard any time.",
+  },
 ];
 
 export function LandingContent() {
@@ -98,7 +158,8 @@ export function LandingContent() {
             <span className="text-sky-400"> privately.</span>
           </h1>
           <p className="text-slate-400 text-lg sm:text-xl max-w-xl mx-auto">
-            Sticker a QR on your stuff. Finders message you—no phone or email shared.
+            Turn any item into a smart, private “return to owner” tag so honest finders can reach you—
+            without ever revealing your personal contact details.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <GetStartedLink />
@@ -127,10 +188,15 @@ export function LandingContent() {
         className="scroll-mt-6 border-t border-slate-800 bg-slate-900/40 px-4 sm:px-6 py-12 sm:py-16"
       >
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-semibold tracking-tight text-slate-100 text-center mb-8">
-            How it works
-          </h2>
-          <ol className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="space-y-3 text-center mb-10">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-100">
+              How it works for you &amp; the finder
+            </h2>
+            <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
+              From “oh no, I lost it” to “it’s back with me” in four simple steps.
+            </p>
+          </div>
+          <ol className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {HOW_IT_WORKS.map(({ step, title, description }) => (
               <li
                 key={step}
@@ -154,24 +220,74 @@ export function LandingContent() {
         </div>
       </section>
 
-      {/* Features */}
+      {/* Features / benefits */}
       <section className="border-t border-slate-800 px-4 sm:px-6 py-10 sm:py-14">
-        <div className="max-w-3xl mx-auto">
-          <ul className="grid sm:grid-cols-3 gap-6 sm:gap-8">
-            {FEATURES.map(({ title, description }) => (
-              <li key={title} className="text-center">
-                <h3 className="text-slate-200 font-medium">{title}</h3>
-                <p className="text-slate-400 text-sm mt-1">{description}</p>
-              </li>
-            ))}
-          </ul>
+        <div className="max-w-5xl mx-auto">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1.3fr)] items-start">
+            <div className="space-y-3">
+              <h2 className="text-xl sm:text-2xl font-semibold text-slate-100">
+                Built for when losing things really matters
+              </h2>
+              <p className="text-slate-400 text-sm sm:text-base">
+                Tagback is for the everyday disasters: missing keys, left-behind backpacks, a pet that
+                slips out, or a phone left in a rideshare. We make it effortless for the honest person
+                who finds your stuff to get it back to you.
+              </p>
+              <ul className="grid sm:grid-cols-2 gap-4 sm:gap-5 pt-2">
+                {FEATURES.map(({ title, description }) => (
+                  <li
+                    key={title}
+                    className="rounded-lg border border-slate-800 bg-slate-900/40 p-3 sm:p-4 text-left"
+                  >
+                    <h3 className="text-slate-200 font-medium text-sm sm:text-base">{title}</h3>
+                    <p className="text-slate-400 text-xs sm:text-sm mt-1">{description}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="space-y-4 rounded-2xl border border-sky-500/30 bg-sky-500/5 p-5 sm:p-6 text-left">
+              <p className="text-xs font-semibold tracking-wide uppercase text-sky-300">
+                What the finder sees
+              </p>
+              <p className="text-slate-200 text-sm sm:text-base">
+                A clean page with your item name, a short explanation, and a single message box. That’s
+                it—no sign-up, no ads, no dark patterns.
+              </p>
+              <ul className="space-y-2 text-xs sm:text-sm text-slate-300">
+                <li className="flex gap-2">
+                  <span className="mt-0.5 text-sky-400" aria-hidden>
+                    •
+                  </span>
+                  <span>They confirm what they found and how to reach them.</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="mt-0.5 text-sky-400" aria-hidden>
+                    •
+                  </span>
+                  <span>You get a private message, tied to that specific item.</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="mt-0.5 text-sky-400" aria-hidden>
+                    •
+                  </span>
+                  <span>You reply from your dashboard—no phone number exposed.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Use cases */}
       <section className="border-t border-slate-800 bg-slate-900/40 px-4 sm:px-6 py-10 sm:py-14">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-lg font-semibold text-slate-100 mb-8">Tag what matters</h2>
+          <div className="space-y-3 mb-8">
+            <h2 className="text-lg sm:text-xl font-semibold text-slate-100">Tag what matters</h2>
+            <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
+              From everyday carry to bigger trips away from home, Tagback is flexible enough to cover
+              the things you really care about.
+            </p>
+          </div>
           <ul className="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8">
             {USE_CASES.map(({ label, iconId }) => (
               <li
@@ -194,23 +310,45 @@ export function LandingContent() {
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="border-t border-slate-800 px-4 sm:px-6 py-8 sm:py-10">
-        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
-          <h2 className="text-lg sm:text-xl font-semibold text-slate-100 text-center sm:text-left">
-            Ready to get your stuff back?
-          </h2>
-          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-            <GetStartedLink />
-            <span className="text-slate-500 text-sm">
-              or{" "}
-              <a
-                href="/auth/login"
-                className="text-sky-400 hover:text-sky-300 underline-offset-2 hover:underline"
-              >
-                Log in
-              </a>
-            </span>
+      {/* FAQ + final CTA */}
+      <section className="border-t border-slate-800 px-4 sm:px-6 py-10 sm:py-14">
+        <div className="max-w-5xl mx-auto grid gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1.2fr)] items-start">
+          <div>
+            <h2 className="text-lg sm:text-xl font-semibold text-slate-100 mb-4">
+              Questions you might have
+            </h2>
+            <dl className="space-y-4">
+              {FAQ_ITEMS.map((item) => (
+                <div
+                  key={item.q}
+                  className="rounded-xl border border-slate-800 bg-slate-900/40 p-3 sm:p-4 text-left"
+                >
+                  <dt className="text-slate-200 text-sm sm:text-base font-medium">{item.q}</dt>
+                  <dd className="text-slate-400 text-xs sm:text-sm mt-1">{item.a}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+          <div className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-5 sm:p-6 text-center lg:text-left">
+            <h2 className="text-lg sm:text-xl font-semibold text-slate-100">
+              Ready to tag your first item?
+            </h2>
+            <p className="text-slate-400 text-sm sm:text-base">
+              Create your first tag, print the QR, and stick it on something you would hate to lose.
+              The whole flow takes just a couple of minutes.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3 sm:gap-4">
+              <GetStartedLink />
+              <span className="text-slate-500 text-sm">
+                Already using Tagback?{" "}
+                <a
+                  href="/auth/login"
+                  className="text-sky-400 hover:text-sky-300 underline-offset-2 hover:underline"
+                >
+                  Log in
+                </a>
+              </span>
+            </div>
           </div>
         </div>
       </section>
