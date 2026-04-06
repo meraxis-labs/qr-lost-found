@@ -4,6 +4,8 @@
  * Only for logged-in users. Create tags, list with search/sort/filter/pagination,
  * edit label, pause (deactivate) tags, QR, and messages. Unread messages stay
  * unread until the owner expands that tag’s messages (then we mark them read).
+ * New messages sync via Supabase Realtime (subscription in AuthStatus); per-message
+ * mark unread, delete, and CSV export. Reply-to-finder is deferred to a later flow.
  */
 
 "use client";
@@ -26,6 +28,14 @@ import { tagRowToTag, messageRowToMessage } from "@/lib/types";
 import { DEFAULT_TAG_ICON_ID, getTagIconEmoji } from "@/lib/tagIcons";
 import { toast } from "sonner";
 import { dispatchUnreadChanged } from "@/lib/unreadMessages";
+import {
+  MESSAGE_REALTIME_EVENT,
+  type MessageRealtimeDetail,
+} from "@/lib/messageRealtime";
+import {
+  buildMessagesCsv,
+  downloadTextFile,
+} from "@/lib/exportMessagesCsv";
 
 const PAGE_SIZE = 10;
 
@@ -69,6 +79,8 @@ export default function DashboardPage() {
 
   /** Tags whose message list is expanded in the UI (unread tags start collapsed). */
   const [openMessageTags, setOpenMessageTags] = useState<Set<string>>(new Set());
+
+  const [deletingMessageId, setDeletingMessageId] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -169,6 +181,67 @@ export default function DashboardPage() {
     });
   }, [tags, messagesByTagId]);
 
+  /**
+   * Merge Realtime payloads broadcast from AuthStatus (single WebSocket; RLS-scoped).
+   */
+  useEffect(() => {
+    if (!user) return;
+
+    const handler = (e: Event) => {
+      const d = (e as CustomEvent<MessageRealtimeDetail>).detail;
+      const tagIds = new Set(tags.map((t) => t.id));
+
+      if (d.eventType === "INSERT" && d.newRecord) {
+        const row = d.newRecord;
+        if (!tagIds.has(row.tag_id)) {
+          setMessagesRetryKey((k) => k + 1);
+          return;
+        }
+        const msg = messageRowToMessage(row);
+        setMessagesByTagId((prev) => {
+          const list = prev[row.tag_id] ?? [];
+          if (list.some((m) => m.id === msg.id)) return prev;
+          const nextList = [msg, ...list].sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+          return { ...prev, [row.tag_id]: nextList };
+        });
+        toast.info("New message");
+        return;
+      }
+
+      if (d.eventType === "UPDATE" && d.newRecord) {
+        const row = d.newRecord;
+        if (!tagIds.has(row.tag_id)) {
+          setMessagesRetryKey((k) => k + 1);
+          return;
+        }
+        const msg = messageRowToMessage(row);
+        setMessagesByTagId((prev) => ({
+          ...prev,
+          [row.tag_id]: (prev[row.tag_id] ?? []).map((m) =>
+            m.id === msg.id ? msg : m
+          ),
+        }));
+        return;
+      }
+
+      if (d.eventType === "DELETE" && d.oldRecord) {
+        const row = d.oldRecord;
+        if (!tagIds.has(row.tag_id)) return;
+        setMessagesByTagId((prev) => ({
+          ...prev,
+          [row.tag_id]: (prev[row.tag_id] ?? []).filter((m) => m.id !== row.id),
+        }));
+      }
+    };
+
+    window.addEventListener(MESSAGE_REALTIME_EVENT, handler as EventListener);
+    return () =>
+      window.removeEventListener(MESSAGE_REALTIME_EVENT, handler as EventListener);
+  }, [user, tags]);
+
   const markTagMessagesRead = useCallback(async (tagId: string) => {
     const msgs = messagesByTagId[tagId] ?? [];
     const unreadIds = msgs.filter((m) => !m.read).map((m) => m.id);
@@ -191,6 +264,55 @@ export default function DashboardPage() {
   const handleOpenMessages = (tagId: string) => {
     setOpenMessageTags((prev) => new Set(prev).add(tagId));
     void markTagMessagesRead(tagId);
+  };
+
+  const markMessageUnread = async (tagId: string, messageId: string) => {
+    const { error } = await supabase
+      .from("messages")
+      .update({ read: false })
+      .eq("id", messageId);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setMessagesByTagId((prev) => ({
+      ...prev,
+      [tagId]: (prev[tagId] ?? []).map((m) =>
+        m.id === messageId ? { ...m, read: false } : m
+      ),
+    }));
+    dispatchUnreadChanged();
+  };
+
+  const deleteMessage = async (tagId: string, messageId: string) => {
+    if (!confirm("Delete this message? This cannot be undone.")) return;
+    setDeletingMessageId(messageId);
+    const { error } = await supabase.from("messages").delete().eq("id", messageId);
+    setDeletingMessageId(null);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setMessagesByTagId((prev) => ({
+      ...prev,
+      [tagId]: (prev[tagId] ?? []).filter((m) => m.id !== messageId),
+    }));
+    dispatchUnreadChanged();
+    toast.success("Message deleted");
+  };
+
+  const exportMessagesForTag = (tag: Tag) => {
+    const messages = messagesByTagId[tag.id] ?? [];
+    if (messages.length === 0) return;
+    const csv = buildMessagesCsv(tag, messages);
+    const safe =
+      (tag.label ?? "tag").replace(/[^\w\-]+/g, "_").slice(0, 40) || "tag";
+    downloadTextFile(
+      `tagback-messages-${safe}-${tag.id.slice(0, 8)}.csv`,
+      csv,
+      "text/csv"
+    );
+    toast.success("Export downloaded");
   };
 
   const unreadTotal = useMemo(() => {
@@ -688,9 +810,18 @@ export default function DashboardPage() {
                               </button>
                             ) : (
                               <>
-                                <p className="text-sm font-medium text-slate-400 mb-2">
-                                  Messages ({messages.length})
-                                </p>
+                                <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                                  <p className="text-sm font-medium text-slate-400">
+                                    Messages ({messages.length})
+                                  </p>
+                                  <button
+                                    type="button"
+                                    onClick={() => exportMessagesForTag(tag)}
+                                    className="text-xs text-sky-400 hover:text-sky-300 border border-slate-600 rounded-lg px-2.5 py-1.5 min-h-[36px] touch-manipulation"
+                                  >
+                                    Export CSV
+                                  </button>
+                                </div>
                                 <ul className="space-y-2">
                                   {messages.map((msg) => (
                                     <li
@@ -698,9 +829,37 @@ export default function DashboardPage() {
                                       className="text-base sm:text-sm text-slate-300 bg-slate-900/60 rounded-lg p-3 border border-slate-800"
                                     >
                                       <p className="whitespace-pre-wrap">{msg.content}</p>
-                                      <p className="text-sm text-slate-500 mt-2">
-                                        {new Date(msg.createdAt).toLocaleString()}
-                                      </p>
+                                      <div className="flex flex-wrap items-center gap-2 mt-2">
+                                        <p className="text-sm text-slate-500 flex-1 min-w-0">
+                                          {new Date(msg.createdAt).toLocaleString()}
+                                          {msg.read ? "" : " · Unread"}
+                                        </p>
+                                        <div className="flex flex-wrap gap-1.5 shrink-0">
+                                          {msg.read && (
+                                            <button
+                                              type="button"
+                                              onClick={() =>
+                                                void markMessageUnread(tag.id, msg.id)
+                                              }
+                                              className="text-xs text-slate-400 hover:text-slate-200 border border-slate-600 rounded px-2 py-1 touch-manipulation"
+                                            >
+                                              Mark unread
+                                            </button>
+                                          )}
+                                          <button
+                                            type="button"
+                                            disabled={deletingMessageId === msg.id}
+                                            onClick={() =>
+                                              void deleteMessage(tag.id, msg.id)
+                                            }
+                                            className="text-xs text-red-400 hover:text-red-300 border border-red-900/50 rounded px-2 py-1 touch-manipulation disabled:opacity-50"
+                                          >
+                                            {deletingMessageId === msg.id
+                                              ? "…"
+                                              : "Delete"}
+                                          </button>
+                                        </div>
+                                      </div>
                                     </li>
                                   ))}
                                 </ul>

@@ -18,6 +18,8 @@ import {
   fetchUnreadMessageCount,
   UNREAD_CHANGED_EVENT,
 } from "../lib/unreadMessages";
+import { dispatchMessageRealtime } from "../lib/messageRealtime";
+import type { MessageRow } from "../lib/types";
 import { toast } from "sonner";
 
 export function AuthStatus() {
@@ -91,6 +93,37 @@ export function AuthStatus() {
     return () => {
       cancelled = true;
       window.removeEventListener(UNREAD_CHANGED_EVENT, onUnreadChanged);
+    };
+  }, [user]);
+
+  /**
+   * Supabase Realtime: message rows the user may SELECT (RLS) stream as
+   * postgres_changes. We broadcast to the dashboard and refresh the unread badge.
+   */
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel(`realtime:messages:${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "messages" },
+        (payload) => {
+          const eventType = payload.eventType as "INSERT" | "UPDATE" | "DELETE";
+          dispatchMessageRealtime({
+            eventType,
+            newRecord: (payload.new as MessageRow | null) ?? null,
+            oldRecord: (payload.old as MessageRow | null) ?? null,
+          });
+          void fetchUnreadMessageCount(supabase, user.id).then((n) => {
+            setUnreadCount(n);
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
     };
   }, [user]);
 
