@@ -16,7 +16,13 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { TagQR } from "@/components/TagQR";
 import { IconPicker } from "@/components/IconPicker";
-import type { Tag, TagRow, Message, MessageRow } from "@/lib/types";
+import type {
+  Tag,
+  TagRow,
+  Message,
+  MessageRow,
+  DbTagInsert,
+} from "@/lib/types";
 import { tagRowToTag, messageRowToMessage } from "@/lib/types";
 import { DEFAULT_TAG_ICON_ID, getTagIconEmoji } from "@/lib/tagIcons";
 
@@ -33,6 +39,10 @@ export default function DashboardPage() {
   const [expandedQRTagId, setExpandedQRTagId] = useState<string | null>(null);
   const [removingTagId, setRemovingTagId] = useState<string | null>(null);
   const [removeError, setRemoveError] = useState<string | null>(null);
+  const [tagsError, setTagsError] = useState<string | null>(null);
+  const [messagesError, setMessagesError] = useState<string | null>(null);
+  const [tagsRetryKey, setTagsRetryKey] = useState(0);
+  const [messagesRetryKey, setMessagesRetryKey] = useState(0);
 
   /**
    * Effect 1 — Auth guard: On mount we check if there's a logged-in user.
@@ -72,30 +82,31 @@ export default function DashboardPage() {
     if (!user) return;
 
     let isMounted = true;
+    setTagsError(null);
 
-    void Promise.resolve(
-      supabase
-        .from("tags")
-        .select("*")
-        .eq("owner_id", user.id)
-        .order("created_at", { ascending: false })
-    )
-      .then(({ data, error }) => {
+    void (async () => {
+      try {
+        const { data, error } = await supabase
+          .from("tags")
+          .select("*")
+          .eq("owner_id", user.id)
+          .order("created_at", { ascending: false });
         if (!isMounted) return;
         if (error) {
+          setTagsError(error.message || "Could not load tags.");
           setTags([]);
           return;
         }
-        setTags((data as TagRow[]).map(tagRowToTag));
-      })
-      .finally(() => {
+        setTags(((data ?? []) as TagRow[]).map(tagRowToTag));
+      } finally {
         if (isMounted) setLoading(false);
-      });
+      }
+    })();
 
     return () => {
       isMounted = false;
     };
-  }, [user]);
+  }, [user, tagsRetryKey]);
 
   /**
    * Effect 3 — Load messages and mark as read: Once we have tags we fetch
@@ -109,12 +120,20 @@ export default function DashboardPage() {
     if (tags.length === 0) return;
     const tagIds = tags.map((t) => t.id);
     let isMounted = true;
+    setMessagesError(null);
 
-    void Promise.resolve(
-      supabase.from("messages").select("*").in("tag_id", tagIds).order("created_at", { ascending: false })
-    )
-      .then(async ({ data, error }) => {
-        if (!isMounted || error) return;
+    void (async () => {
+      try {
+        const { data, error } = await supabase
+          .from("messages")
+          .select("*")
+          .in("tag_id", tagIds)
+          .order("created_at", { ascending: false });
+        if (!isMounted) return;
+        if (error) {
+          setMessagesError(error.message || "Could not load messages.");
+          return;
+        }
         const rows = (data ?? []) as MessageRow[];
         const byTag: Record<string, Message[]> = {};
         const unreadIds: string[] = [];
@@ -126,15 +145,29 @@ export default function DashboardPage() {
         }
         setMessagesByTagId(byTag);
         if (unreadIds.length > 0) {
-          await supabase.from("messages").update({ read: true } as never).in("id", unreadIds);
+          const { error: markError } = await supabase
+            .from("messages")
+            .update({ read: true })
+            .in("id", unreadIds);
+          if (!isMounted) return;
+          if (markError) {
+            setMessagesError(
+              markError.message || "Could not mark messages as read."
+            );
+          }
         }
-      })
-      .catch(() => {});
+      } catch (err: unknown) {
+        if (!isMounted) return;
+        setMessagesError(
+          err instanceof Error ? err.message : "Could not load messages."
+        );
+      }
+    })();
 
     return () => {
       isMounted = false;
     };
-  }, [tags]);
+  }, [tags, messagesRetryKey]);
 
   /**
    * handleCreateTag: On form submit we insert a new row into the "tags" table
@@ -159,14 +192,15 @@ export default function DashboardPage() {
     }
 
     setCreating(true);
+    const insertPayload: DbTagInsert = {
+      owner_id: user.id,
+      label: trimmedLabel || null,
+      is_active: true,
+      icon: createIcon ?? null,
+    };
     const { data, error } = await supabase
       .from("tags")
-      .insert({
-        owner_id: user.id,
-        label: trimmedLabel || null,
-        is_active: true,
-        icon: createIcon || null,
-      } as never)
+      .insert(insertPayload)
       .select()
       .single();
 
@@ -263,9 +297,42 @@ export default function DashboardPage() {
           </p>
         )}
 
+        {tagsError && (
+          <div className="mb-4 rounded-lg border border-red-900 bg-red-950/40 px-3 py-3 text-sm text-red-300 space-y-2">
+            <p>{tagsError}</p>
+            <button
+              type="button"
+              onClick={() => {
+                setTagsError(null);
+                setLoading(true);
+                setTagsRetryKey((k) => k + 1);
+              }}
+              className="text-sky-400 hover:text-sky-300 underline touch-manipulation"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {messagesError && tags.length > 0 && (
+          <div className="mb-4 rounded-lg border border-amber-900/60 bg-amber-950/30 px-3 py-2 text-sm text-amber-200">
+            <p className="inline mr-2">{messagesError}</p>
+            <button
+              type="button"
+              onClick={() => {
+                setMessagesError(null);
+                setMessagesRetryKey((k) => k + 1);
+              }}
+              className="text-sky-400 hover:text-sky-300 underline touch-manipulation"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
         {loading ? (
           <p className="text-base text-slate-400">Loading your tags…</p>
-        ) : tags.length === 0 ? (
+        ) : tagsError ? null : tags.length === 0 ? (
           <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 sm:p-8 text-center">
             <p className="text-slate-300 mb-2 text-base">No tags yet</p>
             <p className="text-base sm:text-sm text-slate-400 leading-relaxed">

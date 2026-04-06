@@ -12,7 +12,6 @@
  */
 
 import { createBrowserClient } from "@supabase/ssr";
-import type { Database } from "./types";
 
 // NEXT_PUBLIC_ prefix is required so Next.js exposes these to the browser.
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -26,6 +25,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 /**
  * createBrowserClient uses cookies for the session so middleware can read it.
- * Typed with Database for .from("tags") and .from("messages").
+ * Use `DbTagInsert` / `DbTagUpdate` etc. from `./types` at call sites, or generate
+ * types with `supabase gen types` and pass `createBrowserClient<Database>(...)`.
  */
-export const supabase = createBrowserClient<Database>(supabaseUrl, supabaseAnonKey);
+export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);

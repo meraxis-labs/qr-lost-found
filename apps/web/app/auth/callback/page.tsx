@@ -61,6 +61,10 @@ function AuthCallbackContent() {
     }
 
     void finish();
+
+    return () => {
+      isMounted = false;
+    };
   }, [router, searchParams]);
 
   if (status === "loading") {

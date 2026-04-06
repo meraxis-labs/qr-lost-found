@@ -12,7 +12,7 @@ import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { IconPicker } from "@/components/IconPicker";
-import type { TagRow } from "@/lib/types";
+import type { TagRow, DbTagUpdate } from "@/lib/types";
 import { tagRowToTag } from "@/lib/types";
 import type { Tag } from "@repo/types";
 
@@ -103,14 +103,15 @@ export default function CustomizeFinderPage() {
     }
 
     setSaving(true);
+    const patch: DbTagUpdate = {
+      label: trimmedLabel || null,
+      icon: tagIcon ?? null,
+      finder_title: finderTitle.trim() || null,
+      finder_message: finderMessage.trim() || null,
+    };
     const { error } = await supabase
       .from("tags")
-      .update({
-        label: trimmedLabel || null,
-        icon: tagIcon || null,
-        finder_title: finderTitle.trim() || null,
-        finder_message: finderMessage.trim() || null,
-      } as never)
+      .update(patch)
       .eq("id", tagId)
       .eq("owner_id", user.id);
     setSaving(false);

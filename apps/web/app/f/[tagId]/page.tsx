@@ -7,22 +7,32 @@
  * If the tag doesn't exist or is inactive we call notFound() and Next.js
  * renders the not-found.tsx page.
  *
- * This is a Server Component: we await params and run the Supabase query on
- * the server, so the initial HTML already has the tag (or 404). That avoids
- * a loading spinner. The form is a Client Component (FinderForm) because it
- * needs useState and form submission.
+ * Server Component: uses createServerClient (see lib/supabase/server) — not
+ * the browser Supabase client.
  */
 
 import { notFound } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { TagRow } from "@/lib/types";
 import { FinderForm } from "@/app/f/[tagId]/FinderForm";
 
 type Props = { params: Promise<{ tagId: string }> };
 
 export default async function FinderPage({ params }: Props) {
-  // In Next.js 15, params is a Promise; we await it to get { tagId }.
   const { tagId } = await params;
+
+  let supabase;
+  try {
+    supabase = await createSupabaseServerClient();
+  } catch {
+    return (
+      <main className="flex-1 flex flex-col min-h-0 items-center justify-center px-4 py-8">
+        <p className="text-slate-400 text-center max-w-md">
+          This page is temporarily unavailable. Please try again later.
+        </p>
+      </main>
+    );
+  }
 
   const { data, error } = await supabase
     .from("tags")
@@ -31,14 +41,15 @@ export default async function FinderPage({ params }: Props) {
     .eq("is_active", true)
     .single();
 
-  const row = data as Pick<TagRow, "id" | "is_active" | "finder_title" | "finder_message"> | null;
+  const row = data as
+    | Pick<TagRow, "id" | "is_active" | "finder_title" | "finder_message">
+    | null;
 
   if (error || !row) {
     notFound();
   }
 
-  const title =
-    row.finder_title?.trim() || "You found something?";
+  const title = row.finder_title?.trim() || "You found something?";
   const message =
     row.finder_message?.trim() ||
     "This item has a Tagback tag. Send a short message to the owner anonymously — they'll get it without seeing your contact info.";

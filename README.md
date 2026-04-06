@@ -81,6 +81,14 @@ Create `.env.local` in `apps/web/`:
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
+
+# Optional — finder form (defaults: 8 messages per IP+tag per 24h)
+# FINDER_RATE_LIMIT_MAX=8
+# FINDER_RATE_LIMIT_WINDOW_HOURS=24
+
+# Optional — Cloudflare Turnstile on /f/[tagId] (set both for CAPTCHA)
+# NEXT_PUBLIC_TURNSTILE_SITE_KEY=
+# TURNSTILE_SECRET_KEY=
 ```
 
 ---

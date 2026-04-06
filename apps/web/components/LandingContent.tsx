@@ -10,7 +10,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { GetStartedLink } from "./GetStartedLink";
 import { getTagIconEmoji } from "@/lib/tagIcons";
@@ -99,6 +99,9 @@ const FAQ_ITEMS = [
 
 export function LandingContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  /** Set by middleware when `/dashboard` is accessed but Supabase URL/key env is missing. */
+  const configMissing = searchParams.get("config") === "missing";
   const [user, setUser] = useState<{ id: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -114,10 +117,29 @@ export function LandingContent() {
   }, []);
 
   useEffect(() => {
-    if (!loading && user) {
+    if (!loading && user && !configMissing) {
       router.replace("/dashboard");
     }
-  }, [loading, user, router]);
+  }, [loading, user, router, configMissing]);
+
+  if (user && configMissing) {
+    return (
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-12 sm:py-16">
+        <div className="max-w-md rounded-xl border border-amber-900/60 bg-amber-950/30 px-5 py-6 text-center space-y-3">
+          <h1 className="text-lg font-medium text-slate-100">
+            App configuration incomplete
+          </h1>
+          <p className="text-sm text-slate-400 leading-relaxed">
+            Supabase environment variables are missing on the server. The dashboard
+            cannot load until{" "}
+            <code className="text-slate-300">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
+            <code className="text-slate-300">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>{" "}
+            are set.
+          </p>
+        </div>
+      </main>
+    );
+  }
 
   // Redirecting or still loading: show minimal content to avoid flash of "Log in"
   if (loading || user) {

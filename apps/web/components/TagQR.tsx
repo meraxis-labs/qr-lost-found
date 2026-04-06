@@ -64,9 +64,10 @@ export function TagQR({ tagId, label }: Props) {
 
   const handleCopyUrl = useCallback(() => {
     if (!finderUrl) return;
-    void navigator.clipboard.writeText(finderUrl).then(() => {
-      setCopied(true);
-    });
+    void navigator.clipboard.writeText(finderUrl).then(
+      () => setCopied(true),
+      () => setError("Could not copy. Copy the link manually or try again.")
+    );
   }, [finderUrl]);
 
   useEffect(() => {

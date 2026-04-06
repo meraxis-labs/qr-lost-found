@@ -1,60 +1,63 @@
 /**
- * FINDER FORM — Anonymous message form on the finder page
- * -------------------------------------------------------
- * Used on /f/[tagId]. The finder types a message and submits; we insert a row
- * into the "messages" table with tag_id and content. The owner sees it in
- * their dashboard. We don't collect email or name — it's anonymous. After
- * success we show a confirmation and hide the form so they can't double-submit.
+ * FINDER FORM — Anonymous message via Server Action
+ * ---------------------------------------------------
+ * Submits through submitFinderMessage (rate limit, optional Turnstile, length cap).
  */
 
 "use client";
 
 import { FormEvent, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
-import type { Database } from "@/lib/types";
+import { Turnstile } from "@marsidev/react-turnstile";
+import { submitFinderMessage } from "@/app/f/[tagId]/actions";
+import { FINDER_MESSAGE_MAX_LENGTH } from "@/lib/finderLimits";
 
 type Props = { tagId: string };
 
-// Type for inserting a row into messages — ensures we only send allowed columns.
-type MessageInsert = Database["public"]["Tables"]["messages"]["Insert"];
+const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
 
 export function FinderForm({ tagId }: Props) {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
-  /**
-   * handleSubmit: on form submit we insert one row into the messages table.
-   * We use the Database type so TypeScript knows the shape (tag_id, content).
-   * We don't set finder_token here — the DB or RLS can handle anonymity.
-   * After success we set sent=true so we show the success message instead of
-   * the form; we also clear content so if the component re-renders we don't
-   * show stale text.
-   */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+    const trimmed = content.trim();
+    if (!trimmed) {
+      setError("Please enter a message.");
+      return;
+    }
+    if (trimmed.length > FINDER_MESSAGE_MAX_LENGTH) {
+      setError(
+        `Message is too long (max ${FINDER_MESSAGE_MAX_LENGTH} characters).`
+      );
+      return;
+    }
+    if (turnstileSiteKey && !turnstileToken) {
+      setError("Please complete the verification challenge.");
+      return;
+    }
+
     setLoading(true);
-
-    const row: MessageInsert = {
-      tag_id: tagId,
-      content: content.trim(),
-    };
-
-    const { error } = await supabase.from("messages").insert(row as never);
-
+    const result = await submitFinderMessage({
+      tagId,
+      content: trimmed,
+      turnstileToken: turnstileSiteKey ? turnstileToken : undefined,
+    });
     setLoading(false);
 
-    if (error) {
-      setError(error.message);
+    if (!result.ok) {
+      setError(result.error);
       return;
     }
     setSent(true);
     setContent("");
+    setTurnstileToken(null);
   };
 
-  // After a successful send we replace the form with a short confirmation.
   if (sent) {
     return (
       <div className="rounded-lg bg-emerald-950/40 border border-emerald-900 p-4 text-base text-emerald-200 leading-relaxed">
@@ -62,6 +65,8 @@ export function FinderForm({ tagId }: Props) {
       </div>
     );
   }
+
+  const remaining = FINDER_MESSAGE_MAX_LENGTH - content.length;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -71,15 +76,27 @@ export function FinderForm({ tagId }: Props) {
       <textarea
         id="finder-message"
         required
+        maxLength={FINDER_MESSAGE_MAX_LENGTH}
         rows={4}
         placeholder="e.g. I found your wallet at the café on Main St. How can I get it back to you?"
         value={content}
         onChange={(e) => setContent(e.target.value)}
         className="w-full rounded-lg bg-slate-900 border border-slate-700 px-4 py-3 text-base text-slate-50 placeholder:text-slate-500 outline-none focus:border-sky-500 resize-none min-h-[120px]"
       />
-      {error && (
-        <p className="text-sm text-red-400">{error}</p>
-      )}
+      <p className="text-xs text-slate-500 text-right tabular-nums" aria-live="polite">
+        {remaining} characters left
+      </p>
+      {turnstileSiteKey ? (
+        <div className="flex justify-center">
+          <Turnstile
+            siteKey={turnstileSiteKey}
+            onSuccess={setTurnstileToken}
+            onExpire={() => setTurnstileToken(null)}
+            onError={() => setTurnstileToken(null)}
+          />
+        </div>
+      ) : null}
+      {error && <p className="text-sm text-red-400">{error}</p>}
       <button
         type="submit"
         disabled={loading}

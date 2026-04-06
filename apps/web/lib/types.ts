@@ -94,6 +94,7 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<Omit<TagRow, "id" | "created_at">>;
+        Relationships: [];
       };
       messages: {
         Row: MessageRow;
@@ -106,7 +107,18 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<Omit<MessageRow, "id" | "created_at">>;
+        Relationships: [];
       };
+    };
+    Views: Record<string, never>;
+    Functions: {
+      [_ in never]: never;
     };
   };
 }
+
+/** Typed payloads for Supabase `.insert()` / `.update()` — use these instead of `as never`. */
+export type DbTagInsert = Database["public"]["Tables"]["tags"]["Insert"];
+export type DbTagUpdate = Database["public"]["Tables"]["tags"]["Update"];
+export type DbMessageInsert = Database["public"]["Tables"]["messages"]["Insert"];
+export type DbMessageUpdate = Database["public"]["Tables"]["messages"]["Update"];
